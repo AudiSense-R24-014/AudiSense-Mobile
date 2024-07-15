@@ -1,8 +1,9 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import React from "react";
-import { View, Text, Image } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import CustomButton from "@/components/CustomButton";
 
 const Landing = () => {
   return (
@@ -29,13 +30,13 @@ const Landing = () => {
         </View>
         {/* Button Section */}
         <View className="w-full mb-6">
-          <View className="border-audi-purple border rounded-lg overflow-hidden items-center  bg-audi-purple">
-            <Link href="/onboarding/home" className="px-4 py-4">
-              <Text className="text-white font-inter-semibold text-center text-sm">
-                Login
-              </Text>
-            </Link>
-          </View>
+          <TouchableOpacity
+            className="w-full"
+            onPress={() => router.push("/onboarding/login")}
+          >
+            <CustomButton text="Login" buttonType="primary" />
+          </TouchableOpacity>
+
           <View className="flex-row items-center justify-center m-5">
             <Ionicons
               name="remove-outline"
@@ -55,12 +56,13 @@ const Landing = () => {
               style={{ marginLeft: -10 }}
             />
           </View>
-          <View className="border-audi-purple border rounded-lg overflow-hidden items-center">
-            <Link href="/onboarding/landing" className="px-4 py-4">
-              <Text className="text-audi-purple font-inter-semibold text-center text-sm">
-                Request
-              </Text>
-            </Link>
+          <View className="w-full">
+            <TouchableOpacity
+              className="w-full"
+              onPress={() => router.push("/onboarding/login")}
+            >
+              <CustomButton text="Request" buttonType="secondary" />
+            </TouchableOpacity>
           </View>
         </View>
       </SafeAreaView>

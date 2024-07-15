@@ -2,7 +2,7 @@ import { Tabs } from "expo-router";
 
 const OnboardingLayout = () => {
   return (
-    <Tabs screenOptions={{tabBarStyle : {display : "none"}}}>
+    <Tabs screenOptions={{ tabBarStyle: { display: "none" } }}>
       <Tabs.Screen
         name="gettingStarted"
         options={{
@@ -12,7 +12,15 @@ const OnboardingLayout = () => {
       <Tabs.Screen
         name="login"
         options={{
-          headerShown: false,
+          headerShown: true,
+          headerTitle: "Login",
+          headerTitleAlign: "center",
+          headerTintColor: "#6C26A6",
+          headerTitleStyle: {
+            fontFamily: "Inter_700Bold",
+            fontWeight: "800",
+            fontSize: 32,
+          },
         }}
       />
       <Tabs.Screen
