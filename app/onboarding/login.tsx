@@ -29,7 +29,7 @@ const Login = () => {
         </View>
         <TouchableOpacity
             className="w-full"
-            onPress={() => router.push("/onboarding/landing")}
+            onPress={() => router.push("/dashboard")}
           >
             <CustomButton text="Login" buttonType="primary" />
           </TouchableOpacity>
