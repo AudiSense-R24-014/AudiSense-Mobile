@@ -2,6 +2,8 @@
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
+[`Figma UI`](https://www.figma.com/design/za4xMPO2cHbuSwZS8OKPKA/AudiSense?node-id=0-1&t=Jxcwb58S90wtPZHW-0) 
+
 ## Get started
 
 1. Install dependencies
