@@ -1,5 +1,5 @@
 import CustomButton from "@/components/CustomButton";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
