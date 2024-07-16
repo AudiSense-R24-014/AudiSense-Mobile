@@ -1,6 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { Link } from "expo-router";
+import { View, Text } from "react-native";
 
 const CustomButton = ({
   text,
@@ -11,10 +10,7 @@ const CustomButton = ({
 }) => {
   // Determine styles based on buttonType
   let backgroundColorClass, textColorClass;
-  if (buttonType === "primary") {
-    backgroundColorClass = "bg-audi-purple";
-    textColorClass = "text-white";
-  } else if (buttonType === "secondary") {
+  if (buttonType === "secondary") {
     backgroundColorClass = "bg-white";
     textColorClass = "text-audi-purple";
   } else {

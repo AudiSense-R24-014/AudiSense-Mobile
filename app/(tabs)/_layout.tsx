@@ -4,24 +4,24 @@ const TabsLayout = () => {
   return (
     <Tabs>
       <Tabs.Screen
-        name="home"
+        name="dashboard"
         options={{
-          headerTitle: "Home",
-          title: "Home",
+          headerShown: false,
+          title: "Dashboard",
         }}
       />
       <Tabs.Screen
         name="users/[id]"
         options={{
-          headerTitle: "User Page",
+          headerShown: false,
           title: "User",
         }}
       />
       <Tabs.Screen
-        name="levels"
+        name="tasks"
         options={{
-          headerTitle: "Level Page",
-          title: "Levels",
+          headerShown: false,
+          title: "Tasks",
         }}
       />
     </Tabs>
