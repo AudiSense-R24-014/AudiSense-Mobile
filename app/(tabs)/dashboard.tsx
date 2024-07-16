@@ -1,9 +1,21 @@
-import { Text, View } from "react-native";
+import { router } from 'expo-router';
+import React from 'react';
+import { View, Text, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import DashboardHeaher from '@/components/organs/DashboardHeaher';
+
 
 const Dashboard = () => {
   return (
     <View>
-      <Text>Dashboard</Text>
+      <SafeAreaView>
+        {/* <Text>All Tasks</Text> */}
+        <DashboardHeaher />
+
+        <Pressable onPress={() => router.push("/tasks/levels")} >
+          <Text>Press me</Text>
+        </Pressable>
+      </SafeAreaView>
     </View>
   );
 };
