@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const DashboardHeaher = () => {
+const DashboardHeader = () => {
     return (
         <View>
-            <Text>DashboardHeaher</Text>
+            <Text>DashboardHeader</Text>
         </View>
     )
 }
 
-export default DashboardHeaher
+export default DashboardHeader
