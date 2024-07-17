@@ -6,12 +6,13 @@ import DashboardHeaher from '@/components/organisms/DashboardHeader';
 
 
 const Dashboard = () => {
+  // TODO: Replace with user's name
+  const name = "Leo";
+  const title = `Hello Little ` + name + ` !`;
   return (
     <View>
       <SafeAreaView>
-        {/* <Text>All Tasks</Text> */}
-        <DashboardHeaher />
-
+        <DashboardHeaher title={title} />
         <Pressable onPress={() => router.push("/tasks/levels")} >
           <Text>Press me</Text>
         </Pressable>
