@@ -4,7 +4,7 @@ const LevelsLayout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="allTasks"
+        name="taskOnboarding"
         options={{
           headerShown: false,
         }}

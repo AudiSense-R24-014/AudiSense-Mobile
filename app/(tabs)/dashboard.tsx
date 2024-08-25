@@ -4,6 +4,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 
 const Dashboard = () => {
+  // TODO: Replace with user's name
+  const name = "Leo";
+  const title = `Hello Little ` + name + ` !`;
   return (
     <ScrollView>
       <View className="flex-1 bg-white">
