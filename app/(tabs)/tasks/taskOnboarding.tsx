@@ -1,8 +1,7 @@
 import { router } from 'expo-router';
 import React from 'react';
-import { View, Text, Pressable, Image, TouchableOpacity } from 'react-native';
+import { View, Text, Pressable, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import DashboardHeader from '@/components/organisms/DashboardHeader';
