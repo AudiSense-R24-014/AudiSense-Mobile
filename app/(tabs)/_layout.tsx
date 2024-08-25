@@ -11,17 +11,17 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="users/[id]"
-        options={{
-          headerShown: false,
-          title: "User",
-        }}
-      />
-      <Tabs.Screen
         name="tasks"
         options={{
           headerShown: false,
           title: "Tasks",
+        }}
+      />
+      <Tabs.Screen
+        name="users/[id]"
+        options={{
+          headerShown: false,
+          title: "User",
         }}
       />
     </Tabs>
