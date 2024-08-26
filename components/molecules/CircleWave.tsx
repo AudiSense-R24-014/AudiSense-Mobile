@@ -13,7 +13,7 @@ const CircleWave = ({ text }: { text: string }) => {
   let currentChunkIndex = 0;
   useEffect(() => {
     if (Platform.OS == "ios") {
-      setTts("com.apple.voice.compact.bg-BG.Daria")
+      setTts("com.apple.ttsbundle.siri_Nicky_en-US_compact")
     } else if (Platform.OS == "android") {
       setTts("Google UK English Male")
     } else {
@@ -23,20 +23,39 @@ const CircleWave = ({ text }: { text: string }) => {
   const chunks = text.split(/(?<=[,.])/); // Split text by commas and full stops
 
   const toggleSpeech = () => {
-    if (isSpeaking) {
-      Speech.stop();
-      setIsPaused(true);
-      setIsSpeaking(false);
+    if(Platform.OS == "ios") {
+      if (isSpeaking) {
+        Speech.pause();
+        setIsPaused(true);
+        setIsSpeaking(false);
+      } else if (isPaused) {
+        Speech.resume();
+        setIsSpeaking(true);
+        setIsPaused(false);
+      } else {
+        setIsSpeaking(true);
+        setIsPaused(false);
+        Speech.speak(text, {
+          voice: tts,
+          rate: 0.9,
+        });
+      }
     } else {
-      setIsSpeaking(true);
-      Speech.speak(chunks[currentChunkIndex], {
-        voice: tts,
-        rate: 0.9,
-        onDone: () => {
-          nextChunk();
-        },
-      });
-      setIsPaused(false);
+      if (isSpeaking) {
+        Speech.stop();
+        setIsPaused(true);
+        setIsSpeaking(false);
+      } else {
+        setIsSpeaking(true);
+        Speech.speak(chunks[currentChunkIndex], {
+          voice: tts,
+          rate: 0.9,
+          onDone: () => {
+            nextChunk();
+          },
+        });
+        setIsPaused(false);
+      }
     }
   };
   function nextChunk() {
