@@ -9,7 +9,14 @@ const ComprehensionLayout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="game"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
+    
   );
 };
 
