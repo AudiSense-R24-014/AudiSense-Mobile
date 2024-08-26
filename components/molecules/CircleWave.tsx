@@ -1,16 +1,25 @@
-import React, { useState } from "react";
-import { Pressable, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Platform, Pressable, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { Easing } from "react-native-reanimated";
 import * as Speech from "expo-speech";
 
-const CircleWave = ({text}: {text: string}) => {
+const CircleWave = ({ text }: { text: string }) => {
   const colors = ["#6C26A6", "#5A3DA6", "#4860A6", "#327FA6", "#2379A4"];
+  const [tts, setTts] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   let currentChunkIndex = 0;
-
+  useEffect(() => {
+    if (Platform.OS == "ios") {
+      setTts("com.apple.voice.compact.bg-BG.Daria")
+    } else if (Platform.OS == "android") {
+      setTts("Google UK English Male")
+    } else {
+      setTts("Google UK English Female")
+    }
+  })
   const chunks = text.split(/(?<=[,.])/); // Split text by commas and full stops
 
   const toggleSpeech = () => {
@@ -21,7 +30,7 @@ const CircleWave = ({text}: {text: string}) => {
     } else {
       setIsSpeaking(true);
       Speech.speak(chunks[currentChunkIndex], {
-        voice: "Google UK English Male",
+        voice: tts,
         rate: 0.9,
         onDone: () => {
           nextChunk();
@@ -38,7 +47,7 @@ const CircleWave = ({text}: {text: string}) => {
     currentChunkIndex++;
     console.log("nextIndex", currentChunkIndex);
     Speech.speak(chunks[currentChunkIndex], {
-      voice: "Google UK English Male",
+      voice: tts,
       rate: 0.9,
       onDone: () => {
         nextChunk();
@@ -59,7 +68,7 @@ const CircleWave = ({text}: {text: string}) => {
           colors.map((color, index) => {
             return (
               <MotiView
-                key={index+0}
+                key={index + 0}
                 from={{ opacity: 1, scale: 1 }}
                 animate={{ opacity: 0, scale: 4 }}
                 transition={{

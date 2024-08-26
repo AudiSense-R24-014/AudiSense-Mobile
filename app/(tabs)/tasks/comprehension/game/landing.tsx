@@ -11,7 +11,7 @@ const Landing = () => {
           title="Comprehension - Level 1"
           subtitle="Listen to this amazing story!"
         />
-        <CircleWave text="Once upon a time achchi biwwa wine" />
+        <CircleWave text="Once upon a time Old mcdonald had a farm" />
       </SafeAreaView>
     </View>
   );

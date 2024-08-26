@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React, { useState,useEffect } from 'react';
+import { View, Text, TouchableOpacity, Image,Platform } from 'react-native';
 import * as Speech from 'expo-speech';
 
 const DiscriminationLevel1 = () => {
@@ -28,11 +28,21 @@ const DiscriminationLevel1 = () => {
     //     setSelectedWord(word);
     //   };
 
+    const [tts, setTts] = useState("");
     const kathakarapn=()=>{
         Speech.speak("Hello",{
-      voice: "Microsoft Mark - English (United States)",
+      voice: tts,
       rate:0.5
     });
+    useEffect(() => {
+      if (Platform.OS == "ios") {
+        setTts("com.apple.eloquence.en-GB.Shelley")
+      } else if (Platform.OS == "android") {
+        setTts("Google UK English Male")
+      } else {
+        setTts("Google UK English Female")
+      }
+    })
     }
     return (
         <View className="flex-1 bg-gray-100 p-5">
