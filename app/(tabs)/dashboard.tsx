@@ -1,6 +1,7 @@
 import { Text, TouchableOpacity, View, ScrollView, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from "expo-router";
 
 
 const Dashboard = () => {
@@ -64,7 +65,7 @@ const Dashboard = () => {
               </View>
             </View>
             <View className="p-2 rounded  text-base text-center mx-12 ">
-              <TouchableOpacity className="bg-white p-2 rounded-lg w-48">
+              <TouchableOpacity className="bg-white p-2 rounded-lg w-48" onPress={()=>router.push("../tasks/discrimination/levelOne")}>
                 <Text className="text-violet-800 font-bold text-center">More</Text>
               </TouchableOpacity>
             </View>
