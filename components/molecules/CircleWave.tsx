@@ -81,7 +81,7 @@ const CircleWave = ({ text }: { text: string }) => {
   }
 
   return (
-    <View className="flex-1 items-center">
+    <View className="flex items-center">
       <View className="w-52 h-52 rounded-lg items-center justify-center">
         {isSpeaking &&
           colors.map((color, index) => {
