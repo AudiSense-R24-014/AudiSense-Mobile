@@ -8,7 +8,7 @@ import PlainWave from "../../assets/images/plain-wave.png";
 import { LinearGradient } from "expo-linear-gradient";
 
 const AnswerButton = ({ text }: { text: string }) => {
-  const colors = ["#2379A4", "#327FA6", "#4860A6"];
+  const colors = ["#A991D2", "#F7C0E9"];
   const [tts, setTts] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
 
