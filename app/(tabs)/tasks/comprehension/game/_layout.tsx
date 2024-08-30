@@ -9,6 +9,12 @@ const GameLayout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="speak"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };

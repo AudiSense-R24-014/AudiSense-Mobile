@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import QuestionButton from "../molecules/QuestionButton";
 import AnswerButton from "../molecules/AnswerButton";
+import CustomButton from "../atoms/CustomButton";
 
 const MCQModel = () => {
   return (
@@ -12,12 +13,20 @@ const MCQModel = () => {
       <QuestionButton text="What is the capital of France?" />
       <View className="flex-row justify-center mt-4">
         <View className="mt-4">
-          <AnswerButton text="London" />
-          <AnswerButton text="Berlin" />
+          <AnswerButton character="A" text="London" />
+          <AnswerButton character="C" text="Berlin" />
         </View>
         <View className="mt-4">
-          <AnswerButton text="Madrid" />
-          <AnswerButton text="Rome" />
+          <AnswerButton character="B" text="Madrid" />
+          <AnswerButton character="D" text="Rome" />
+        </View>
+      </View>
+      <View className="flex-row justify-center m-4 mt-12">
+        <View className="flex-1 justify-center w-1/2  m-4">
+          <CustomButton text="Back" buttonType="secondary" />
+        </View>
+        <View className="flex-1 justify-center w-1/2  m-4">
+          <CustomButton text="Next" buttonType="primary" />
         </View>
       </View>
     </View>

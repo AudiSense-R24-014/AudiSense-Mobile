@@ -15,6 +15,7 @@ module.exports = {
       },
       colors: {
         "audi-purple": "#6C26A6",
+        "audi-blue": "#2379A4",
         secondary: "#5E5B5B",
       },
     },

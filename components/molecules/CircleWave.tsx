@@ -48,7 +48,7 @@ const CircleWave = ({ text }: { text: string }) => {
       } else {
         setIsSpeaking(true);
         Speech.speak(chunks[currentChunkIndex], {
-          voice: tts,
+          // voice: tts,
           rate: 0.9,
           onDone: () => {
             nextChunk();

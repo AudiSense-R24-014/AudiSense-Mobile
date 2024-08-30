@@ -4,12 +4,12 @@ import { Feather } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { Easing } from "react-native-reanimated";
 import * as Speech from "expo-speech";
-import PurpleBlueWave from '../../assets/images/purple-blue-wave.png';
 
 const QuestionButton = ({ text }: { text: string }) => {
   const colors = ["#2379A4", "#327FA6", "#4860A6"];
   const [tts, setTts] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const PurpleBlueWave = require('../../assets/images/purple-blue-wave.png');
 
   useEffect(() => {
     if (Platform.OS == "ios") {
