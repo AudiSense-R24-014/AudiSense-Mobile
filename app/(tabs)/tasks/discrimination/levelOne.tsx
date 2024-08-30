@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image,Platform } from 'react-native';
 import * as Speech from 'expo-speech';
+import { router } from "expo-router";
 
 const DiscriminationLevel1 = () => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -60,7 +61,7 @@ const DiscriminationLevel1 = () => {
                 <TouchableOpacity className={`bg-purple-300 p-4 rounded-lg flex-1 mr-2 ${selectedWord === 'hat' ? 'bg-gray-400' : ''}`}>
                     <Image source={require('../../../../assets/images/soundWave1.png')} />
                 </TouchableOpacity>
-                <TouchableOpacity className={`bg-purple-300 p-4 rounded-lg flex-1 mr-2 ${selectedWord === 'mat' ? 'bg-gray-400' : ''}`}>
+                <TouchableOpacity className={`bg-purple-300 p-4 rounded-lg flex-1 mr-2 ${selectedWord === 'mat' ? 'bg-gray-400' : ''}`}onPress={()=>router.push("./levelTwo")}>
 
                 </TouchableOpacity>
             </View>
