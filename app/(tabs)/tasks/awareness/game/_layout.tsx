@@ -4,13 +4,19 @@ const ComprehensionLayout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="levels"
+        name="BasicAwareness"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name="game"
+        name="Ling6Combined"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Ling6Separated"
         options={{
           headerShown: false,
         }}
