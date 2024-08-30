@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Image, Platform, Pressable, Text, View } from "react-native";
-import { Feather } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { Easing } from "react-native-reanimated";
 import * as Speech from "expo-speech";
-import PlainWave from "../../assets/images/plain-wave.png";
 import { LinearGradient } from "expo-linear-gradient";
 
-const AnswerButton = ({ text }: { text: string }) => {
+const AnswerButton = ({ text, character }: { text: string, character: string }) => {
   const colors = ["#A991D2", "#F7C0E9"];
   const [tts, setTts] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const PlainWave = require("../../assets/images/plain-wave.png");
 
   useEffect(() => {
     if (Platform.OS == "ios") {
@@ -75,7 +74,7 @@ const AnswerButton = ({ text }: { text: string }) => {
             end={{ x: 1.2, y: 0 }}
             className="p-2 rounded-lg flex-row items-center"
           >
-            <Text className="font-inter-medium text-xl text-white">A:</Text>
+            <Text className="font-inter-medium text-xl text-white">{character}:</Text>
             <Image source={PlainWave} className="h-10 w-20 mx-2" />
           </LinearGradient>
         </Pressable>
