@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 
-const ComprehensionLayout = () => {
+const AwarenessGameLayout = () => {
   return (
     <Stack>
       <Stack.Screen
@@ -21,8 +21,26 @@ const ComprehensionLayout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="AwarenessTaskView/[id]"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Ling6AllTaskView/[id]"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="Ling6SeparateTaskView/[id]"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };
 
-export default ComprehensionLayout;
+export default AwarenessGameLayout;

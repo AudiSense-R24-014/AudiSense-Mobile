@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 
-const ComprehensionLayout = () => {
+const AwarenessLayout = () => {
   return (
     <Stack>
       <Stack.Screen
@@ -19,4 +19,4 @@ const ComprehensionLayout = () => {
   );
 };
 
-export default ComprehensionLayout;
+export default AwarenessLayout;
