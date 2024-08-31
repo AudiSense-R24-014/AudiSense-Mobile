@@ -82,7 +82,7 @@ export default function Ling6SeparateTaskView() {
                     <MaterialIcons name="arrow-back" size={24} color="#6C26A6" />
                 </TouchableOpacity>
                 <Text className="text-2xl font-bold text-white flex-1 text-center" style={{ color: '#6C26A6' }}>
-                    Ling 6 - Separate Task View
+                    Awareness - Level 3 Task
                 </Text>
             </LinearGradient>
 
