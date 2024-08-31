@@ -1,4 +1,4 @@
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -18,6 +18,7 @@ export default function AwarenessTaskView() {
     const [responses, setResponses] = useState([]); // Array to store responses
     const [responseShown, setResponseShown] = useState(false); // Flag to control showing responses
     const [activeSound, setActiveSound] = useState(null); // State to track the currently clicked sound
+    const [amplificationResponse, setAmplificationResponse] = useState(null); // Track the response for the additional question
 
     const soundRef = useRef(null);
 
@@ -81,7 +82,7 @@ export default function AwarenessTaskView() {
         setResponseShown(true); // Show the response section once
         setResponses(prevResponses => [
             ...prevResponses.filter(response => response.name !== soundName), // Remove old entries with the same name
-            { name: soundName, url: url, responded: false, result: false }
+            { name: soundName, url: url, responded: false, result: null }
         ]);
     }
 
@@ -111,8 +112,18 @@ export default function AwarenessTaskView() {
 
     function handleSubmit() {
         // Handle the submit action here
-        console.log('Submitting responses:', responses);
+        const collectedResponses = {
+            ...responses,
+            amplification_device: amplificationResponse,
+        };
+        console.log("Collected responses:", collectedResponses);
+        Alert.alert("Responses Submitted", JSON.stringify(collectedResponses, null, 2));
     }
+
+    const handleAmplificationResponse = (response) => {
+        setAmplificationResponse(response);
+        console.log(`Amplification device response: ${response}`);
+    };
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
@@ -131,6 +142,8 @@ export default function AwarenessTaskView() {
                 </Text>
             </LinearGradient>
             <View style={{ padding: 16 }}>
+
+                {/* Additional Question */}
                 <LinearGradient
                     colors={['#9b7dc8', '#e8ace1']}
                     start={{ x: 0, y: 0 }}
@@ -140,6 +153,7 @@ export default function AwarenessTaskView() {
                         borderRadius: 12,
                         borderWidth: 2,
                         borderColor: '#FFFFFF',
+                        marginBottom: 16, // Add some margin at the bottom
                     }}
                 >
                     <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -149,23 +163,28 @@ export default function AwarenessTaskView() {
 
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <TouchableOpacity
-                                onPress={() => playSound(data.sounds[0].url, 'amplification_device_Yes')}
-                                style={[
-                                    styles.button,
-                                    responses.find(r => r.name === 'amplification_device_Yes')?.result === true && styles.selectedButton
-                                ]}
+                                onPress={() => handleAmplificationResponse('Yes')}
+                                style={{
+                                    backgroundColor: amplificationResponse === 'Yes' ? "#4CAF50" : "#e0e0e0",
+                                    borderRadius: 8,
+                                    paddingVertical: 8,
+                                    paddingHorizontal: 16,
+                                    marginRight: 8,
+                                }}
                             >
-                                <Text style={styles.buttonText}>Yes</Text>
+                                <Text style={{ color: "#FFF", fontWeight: "bold" }}>Yes</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => playSound(data.sounds[1].url, 'amplification_device_No')}
-                                style={[
-                                    styles.button,
-                                    responses.find(r => r.name === 'amplification_device_No')?.result === true && styles.selectedButton
-                                ]}
+                                onPress={() => handleAmplificationResponse('No')}
+                                style={{
+                                    backgroundColor: amplificationResponse === 'No' ? "#F44336" : "#e0e0e0",
+                                    borderRadius: 8,
+                                    paddingVertical: 8,
+                                    paddingHorizontal: 16,
+                                }}
                             >
-                                <Text style={styles.buttonText}>No</Text>
+                                <Text style={{ color: "#FFF", fontWeight: "bold" }}>No</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -215,7 +234,7 @@ export default function AwarenessTaskView() {
                                     onPress={() => handleButtonPress(activeSound, true)}
                                     style={[
                                         styles.button,
-                                        responses.find(r => r.name === activeSound)?.result === true && styles.selectedButton
+                                        responses.find(r => r.name === activeSound)?.result === true && styles.selectedYesButton
                                     ]}
                                 >
                                     <Text style={styles.buttonText}>Yes</Text>
@@ -224,7 +243,7 @@ export default function AwarenessTaskView() {
                                     onPress={() => handleButtonPress(activeSound, false)}
                                     style={[
                                         styles.button,
-                                        responses.find(r => r.name === activeSound)?.result === false && styles.selectedButton
+                                        responses.find(r => r.name === activeSound)?.result === false && styles.selectedNoButton
                                     ]}
                                 >
                                     <Text style={styles.buttonText}>No</Text>
@@ -258,8 +277,11 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginHorizontal: 8,
     },
-    selectedButton: {
-        backgroundColor: '#A2A2D0',
+    selectedYesButton: {
+        backgroundColor: '#4CAF50', // Green for Yes
+    },
+    selectedNoButton: {
+        backgroundColor: '#F44336', // Red for No
     },
     buttonText: {
         color: '#FFF',
@@ -274,7 +296,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     submitButtonContainer: {
-        padding: 4,
+        padding: 8,
         backgroundColor: '#f2f2f2',
         borderTopWidth: 1,
         borderTopColor: '#e6e6e6',
