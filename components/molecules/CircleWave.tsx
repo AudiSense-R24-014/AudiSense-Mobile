@@ -10,20 +10,23 @@ const CircleWave = ({ text }: { text: string }) => {
   const [tts, setTts] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  let currentChunkIndex = 0;
+  const [chunks, setChunks] = useState<string[]>([]);
+  const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
+
   useEffect(() => {
     if (Platform.OS == "ios") {
-      setTts("com.apple.ttsbundle.siri_Nicky_en-US_compact")
+      setTts("com.apple.ttsbundle.siri_Nicky_en-US_compact");
     } else if (Platform.OS == "android") {
-      setTts("Google UK English Male")
+      setTts("Google UK English Male");
     } else {
-      setTts("Google UK English Female")
+      setTts("Google UK English Female");
     }
-  })
-  const chunks = text.split(/(?<=[,.])/); // Split text by commas and full stops
+    let cnk = text.split(/(?<=[,.])/);
+    setChunks(cnk);
+  }, []);
 
   const toggleSpeech = () => {
-    if(Platform.OS == "ios") {
+    if (Platform.OS == "ios") {
       if (isSpeaking) {
         Speech.pause();
         setIsPaused(true);
@@ -47,34 +50,31 @@ const CircleWave = ({ text }: { text: string }) => {
         setIsSpeaking(false);
       } else {
         setIsSpeaking(true);
-        Speech.speak(chunks[currentChunkIndex], {
-          // voice: tts,
-          rate: 0.9,
-          onDone: () => {
-            nextChunk();
-          },
-        });
+        playChunk(currentChunkIndex);
         setIsPaused(false);
       }
     }
   };
-  function nextChunk() {
-    if (currentChunkIndex === chunks.length - 1) {
+
+  const playChunk = (index: number) => {
+    if (index >= chunks.length) {
       reload();
       return;
     }
-    currentChunkIndex++;
-    console.log("nextIndex", currentChunkIndex);
-    Speech.speak(chunks[currentChunkIndex], {
-      voice: tts,
+
+    Speech.stop(); // Stop any current speech before starting a new one
+    Speech.speak(chunks[index], {
+      // voice: tts,
       rate: 0.9,
       onDone: () => {
-        nextChunk();
+        setCurrentChunkIndex(index + 1);
+        playChunk(index + 1); // Play the next chunk
       },
     });
-  }
+  };
 
   function reload() {
+    setCurrentChunkIndex(0);
     Speech.stop();
     setIsPaused(false);
     setIsSpeaking(false);
