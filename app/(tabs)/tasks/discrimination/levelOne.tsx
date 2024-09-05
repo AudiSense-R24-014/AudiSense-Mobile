@@ -1,6 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image,Platform } from 'react-native';
 import * as Speech from 'expo-speech';
+import { router } from "expo-router";
 
 const DiscriminationLevel1 = () => {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -30,10 +31,11 @@ const DiscriminationLevel1 = () => {
 
     const [tts, setTts] = useState("");
     const kathakarapn=()=>{
-        Speech.speak("Hello",{
-      voice: tts,
+        Speech.speak("Bomuda",{
+      // voice: tts,
       rate:0.5
     });
+    }
     useEffect(() => {
       if (Platform.OS == "ios") {
         setTts("com.apple.eloquence.en-GB.Shelley")
@@ -43,7 +45,6 @@ const DiscriminationLevel1 = () => {
         setTts("Google UK English Female")
       }
     })
-    }
     return (
         <View className="flex-1 bg-gray-100 p-5">
             <Text className="text-2xl font-bold mb-2 text-violet-800">Discrimination - Level 1</Text>
@@ -58,9 +59,9 @@ const DiscriminationLevel1 = () => {
 
             <View className="flex-col space-y-3 mb-5">
                 <TouchableOpacity className={`bg-purple-300 p-4 rounded-lg flex-1 mr-2 ${selectedWord === 'hat' ? 'bg-gray-400' : ''}`}>
-                    <Image source={require('../../../../assets/images/soundWave1.png')} />
+                    <Image className="mb-2 " source={require('../../../../assets/images/soundWave1.png')} />
                 </TouchableOpacity>
-                <TouchableOpacity className={`bg-purple-300 p-4 rounded-lg flex-1 mr-2 ${selectedWord === 'mat' ? 'bg-gray-400' : ''}`}>
+                <TouchableOpacity className={`bg-purple-300 p-4 rounded-lg flex-1 mr-2 ${selectedWord === 'mat' ? 'bg-gray-400' : ''}`}onPress={()=>router.push("./levelTwo")}>
 
                 </TouchableOpacity>
             </View>
