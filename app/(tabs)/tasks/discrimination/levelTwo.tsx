@@ -1,19 +1,70 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
-// import { Audio } from 'expo-av';
-// import { TailwindProvider } from 'tailwindcss-react-native';
+import { View, Text, TouchableOpacity, Image, Button } from 'react-native';
+import { Audio } from 'expo-av';
 
 const DiscriminationLevel2 = () => {
     const [isPlayingFour, setIsPlayingFour] = useState(false);
     const [isPlayingRoar, setIsPlayingRoar] = useState(false);
+    const [recordingAudio, setRecordingAudio] = useState<any>();
+    const [recordings, setRecordings] = useState<{ sound: any; duration: string; file: any; }[]>([]);
+
+    async function startRecording() {
+        try {
+            const perm = await Audio.requestPermissionsAsync();
+            if (perm.status === "granted") {
+                await Audio.setAudioModeAsync({
+                    allowsRecordingIOS: true,
+                    playsInSilentModeIOS: true
+                });
+                const { recording } = await Audio.Recording.createAsync();
+                setRecordingAudio(recording);
+            }
+        } catch (err) {
+            console.error("Failed to start recording", err);
+        }
+    }
+
+    async function stopRecording() {
+        setRecordingAudio(undefined);
+        await recordingAudio.stopAndUnloadAsync();
+        let allRecordings = [...recordings];
+        const { sound, status } = await recordingAudio.createNewLoadedSoundAsync();
+        allRecordings.push({
+            sound: sound,
+            duration: getDurationFormatted(status.durationMillis),
+            file: recordingAudio.getURI()
+        });
+        setRecordings(allRecordings);
+    }
+
+    function getDurationFormatted(milliseconds:any) {
+        const minutes = milliseconds / 1000 / 60;
+        const seconds = Math.round((minutes - Math.floor(minutes)) * 60);
+        return seconds < 10 ? `${Math.floor(minutes)}:0${seconds}` : `${Math.floor(minutes)}:${seconds}`;
+    }
+
+    function getRecordingLines() {
+        return recordings.map((recordingLine, index) => (
+            <View key={index} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginLeft: 10, marginRight: 40 }}>
+                <Text style={{ flex: 1, margin: 15 }}>
+                    Recording #{index + 1} | {recordingLine.duration}
+                </Text>
+                <Button onPress={() => recordingLine.sound.replayAsync()} title="Play" />
+            </View>
+        ));
+    }
+
+    function clearRecordings() {
+        setRecordings([]);
+    }
 
     return (
-
         <View className="flex-1 bg-white items-center">
             <View className="flex-col justify-start items-start p-5 w-full">
                 <Text className="text-2xl font-bold mb-2 text-violet-800">Discrimination - Level 2</Text>
                 <Text className="text-lg text-black-700 mt-5 mb-10">Listen, and Tell</Text>
             </View>
+
             <View className="flex-row justify-around w-full mb-20">
                 <View className="items-center w-2/5">
                     <TouchableOpacity
@@ -21,11 +72,7 @@ const DiscriminationLevel2 = () => {
                         disabled={isPlayingFour}
                     >
                         <View className="flex-row items-center w-4/5 h-1 bg-gray-300 rounded">
-                            {isPlayingFour ? (
-                                <Image className="w-5 h-5 mr-2" />
-                            ) : (
-                                <Image className="w-5 h-5 mr-2" />
-                            )}
+                            <Image className="w-5 h-5 mr-2" />
                             <View className="flex-1 h-1 bg-purple-700 rounded" />
                         </View>
                     </TouchableOpacity>
@@ -37,28 +84,31 @@ const DiscriminationLevel2 = () => {
                         disabled={isPlayingRoar}
                     >
                         <View className="flex-row items-center w-4/5 h-1 bg-gray-300 rounded">
-                            {isPlayingRoar ? (
-                                <Image className="w-5 h-5 mr-2" />
-                            ) : (
-                                <Image className="w-5 h-5 mr-2" />
-                            )}
+                            <Image className="w-5 h-5 mr-2" />
                             <View className="flex-1 h-1 bg-purple-700 rounded" />
                         </View>
                     </TouchableOpacity>
                     <Text className="text-lg font-bold text-purple-700 mt-2">Roar</Text>
                 </View>
             </View>
+
             <View className="flex-row justify-center mb-20 space-x-32">
-                <TouchableOpacity className="bg-purple-700 p-5 rounded-full">
-                    <Image className="w-8 h-8" />
-                </TouchableOpacity>
-                <TouchableOpacity className="bg-purple-700 p-5 rounded-full">
-                    <Image className="w-8 h-8" />
+                <TouchableOpacity
+                    className="bg-purple-700 p-5 rounded-full"
+                    onPress={recordingAudio ? stopRecording : startRecording}
+                >
+                    <Text style={{ color: 'white', fontSize: 16 }}>{recordingAudio ? 'Stop' : 'Start'}</Text>
                 </TouchableOpacity>
             </View>
 
-        </View>
+            {getRecordingLines()}
 
+            {recordings.length > 0 && (
+                <TouchableOpacity onPress={clearRecordings} className="bg-red-500 p-5 rounded-lg">
+                    <Text style={{ color: 'white', fontSize: 16 }}>Clear Recordings</Text>
+                </TouchableOpacity>
+            )}
+        </View>
     );
 };
 

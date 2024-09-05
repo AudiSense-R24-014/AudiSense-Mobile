@@ -3,7 +3,6 @@ import { Platform, Pressable, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { Easing } from "react-native-reanimated";
-import Voice from "@react-native-voice/voice";
 
 const SpeechInput = () => {
   const colors = ["#4860A6", "#327FA6", "#2379A4"];
@@ -14,7 +13,6 @@ const SpeechInput = () => {
       setIsSpeaking(false);
     } else {
       setIsSpeaking(true);
-      console.log(Voice.isAvailable());
     }
   };
 
