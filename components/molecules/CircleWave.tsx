@@ -7,20 +7,12 @@ import * as Speech from "expo-speech";
 
 const CircleWave = ({ text }: { text: string }) => {
   const colors = ["#6C26A6", "#5A3DA6", "#4860A6", "#327FA6", "#2379A4"];
-  const [tts, setTts] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [chunks, setChunks] = useState<string[]>([]);
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
 
   useEffect(() => {
-    if (Platform.OS == "ios") {
-      setTts("com.apple.ttsbundle.siri_Nicky_en-US_compact");
-    } else if (Platform.OS == "android") {
-      setTts("Google UK English Male");
-    } else {
-      setTts("Google UK English Female");
-    }
     let cnk = text.split(/(?<=[,.])/);
     setChunks(cnk);
   }, []);
@@ -39,11 +31,11 @@ const CircleWave = ({ text }: { text: string }) => {
         setIsSpeaking(true);
         setIsPaused(false);
         Speech.speak(text, {
-          voice: tts,
           rate: 0.9,
         });
       }
     } else {
+      console.log("Android or Web");
       if (isSpeaking) {
         Speech.stop();
         setIsPaused(true);
@@ -64,7 +56,6 @@ const CircleWave = ({ text }: { text: string }) => {
 
     Speech.stop(); // Stop any current speech before starting a new one
     Speech.speak(chunks[index], {
-      // voice: tts,
       rate: 0.9,
       onDone: () => {
         setCurrentChunkIndex(index + 1);
