@@ -5,21 +5,18 @@ import { Easing } from "react-native-reanimated";
 import * as Speech from "expo-speech";
 import { LinearGradient } from "expo-linear-gradient";
 
-const AnswerButton = ({ text, character }: { text: string, character: string }) => {
+const AnswerButton = ({
+  text,
+  character,
+  storeAnswer,
+}: {
+  text: string;
+  character: string;
+  storeAnswer?: () => void;
+}) => {
   const colors = ["#A991D2", "#F7C0E9"];
-  const [tts, setTts] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
   const PlainWave = require("../../assets/images/plain-wave.png");
-
-  useEffect(() => {
-    if (Platform.OS == "ios") {
-      setTts("com.apple.ttsbundle.siri_Nicky_en-US_compact");
-    } else if (Platform.OS == "android") {
-      setTts("Google UK English Male");
-    } else {
-      setTts("Google UK English Female");
-    }
-  });
 
   const toggleSpeech = () => {
     if (isSpeaking) {
@@ -28,7 +25,6 @@ const AnswerButton = ({ text, character }: { text: string, character: string }) 
     } else {
       setIsSpeaking(true);
       Speech.speak(text, {
-        voice: tts,
         rate: 0.9,
         onDone: () => {
           setIsSpeaking(false);
@@ -66,7 +62,10 @@ const AnswerButton = ({ text, character }: { text: string, character: string }) 
           })}
         <Pressable
           className="rounded-lg flex-row items-center"
-          onPress={toggleSpeech}
+          onPress={() => {
+            toggleSpeech();
+            storeAnswer && storeAnswer();
+          }}
         >
           <LinearGradient
             colors={["#A991D2", "#F7C0E9"]}
@@ -74,7 +73,9 @@ const AnswerButton = ({ text, character }: { text: string, character: string }) 
             end={{ x: 1.2, y: 0 }}
             className="p-2 rounded-lg flex-row items-center"
           >
-            <Text className="font-inter-medium text-xl text-white">{character}:</Text>
+            <Text className="font-inter-medium text-xl text-white">
+              {character}:
+            </Text>
             <Image source={PlainWave} className="h-10 w-20 mx-2" />
           </LinearGradient>
         </Pressable>
