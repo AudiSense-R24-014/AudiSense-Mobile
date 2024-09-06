@@ -18,7 +18,7 @@ const Index = () => {
     return null;
   }
   return (
-    <Redirect href="/onboarding/landing"/>
+    <Redirect href="/tasks/comprehension/game/landing"/>
   );
 };
 

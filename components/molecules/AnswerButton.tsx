@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Image, Platform, Pressable, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Image, Pressable, Text, View } from "react-native";
 import { MotiView } from "moti";
 import { Easing } from "react-native-reanimated";
 import * as Speech from "expo-speech";
@@ -35,13 +35,13 @@ const AnswerButton = ({
 
   return (
     <View>
-      <View className="rounded-lg items-center m-2 justify-center">
+      <View className="rounded-lg items-center justify-center">
         {isSpeaking &&
           colors.map((color, index) => {
             return (
               <MotiView
                 key={index + 0}
-                from={{ opacity: 1, scale: 1.2 }}
+                from={{ opacity: 1, scale: 1 }}
                 animate={{ opacity: 0, scale: 2 }}
                 transition={{
                   type: "timing",
