@@ -6,20 +6,9 @@ import { Easing } from "react-native-reanimated";
 import * as Speech from "expo-speech";
 
 const QuestionButton = ({ text }: { text: string }) => {
-  const colors = ["#2379A4", "#327FA6", "#4860A6"];
-  const [tts, setTts] = useState("");
+  const colors = ["#083344", "#327FA6", "#4860A6"];
   const [isSpeaking, setIsSpeaking] = useState(false);
   const PurpleBlueWave = require('../../assets/images/purple-blue-wave.png');
-
-  useEffect(() => {
-    if (Platform.OS == "ios") {
-      setTts("com.apple.ttsbundle.siri_Nicky_en-US_compact");
-    } else if (Platform.OS == "android") {
-      setTts("Google UK English Male");
-    } else {
-      setTts("Google UK English Female");
-    }
-  });
 
   const toggleSpeech = () => {
     if (isSpeaking) { 
@@ -28,7 +17,6 @@ const QuestionButton = ({ text }: { text: string }) => {
     } else {
       setIsSpeaking(true);
       Speech.speak(text, {
-        voice: tts,
         rate: 0.9,
         onDone: () => {
           setIsSpeaking(false);
@@ -45,7 +33,7 @@ const QuestionButton = ({ text }: { text: string }) => {
             return (
               <MotiView
                 key={index + 0}
-                from={{ opacity: 1, scale: 1.2 }}
+                from={{ opacity: 0.5, scale: 1.5 }}
                 animate={{ opacity: 0, scale: 2.1 }}
                 transition={{
                   type: "timing",
@@ -56,8 +44,8 @@ const QuestionButton = ({ text }: { text: string }) => {
                 }}
                 style={{
                   position: "absolute",
-                  width: 130,
-                  height: 35,
+                  width: 140,
+                  height: 40,
                   borderRadius: 5,
                   backgroundColor: color,
                 }}
@@ -65,7 +53,7 @@ const QuestionButton = ({ text }: { text: string }) => {
             );
           })}
         <Pressable
-          className="bg-slate-400 px-4 p-2 rounded-lg flex-row items-center"
+          className="bg-cyan-950/90 px-4 p-2 rounded-lg flex-row items-center"
           onPress={toggleSpeech}
         >
           <Feather
