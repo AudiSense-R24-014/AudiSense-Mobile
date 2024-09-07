@@ -1,17 +1,23 @@
 
 import { Stack } from "expo-router";
 
-const IdentificationLayout = () => {
+const IdentificationGameLayout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="levels"
+        name="levelOne"
         options={{
           headerShown: false,
         }}
       />
       <Stack.Screen
-        name="game"
+        name="levelTwo"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="levelThree"
         options={{
           headerShown: false,
         }}
@@ -20,4 +26,4 @@ const IdentificationLayout = () => {
   );
 };
 
-export default IdentificationLayout;
+export default IdentificationGameLayout;
