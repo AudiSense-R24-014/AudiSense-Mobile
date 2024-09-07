@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { View, Text, Pressable } from "react-native";
 import QuestionButton from "../molecules/QuestionButton";
 import AnswerButton from "../molecules/AnswerButton";
@@ -31,10 +31,6 @@ const MCQModel = ({
   totalQuestions: number; // Total number of questions
   lockedAnswer: string; // The locked answer
 }) => {
-  useEffect(() => {
-    // Log the locked answer
-    console.log(lockedAnswer);
-  }, [lockedAnswer]);
   return (
     <View className="items-center my-4">
       <Text className="font-inter-semibold text-gray-700/50 mt-2 text-center">
