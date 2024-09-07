@@ -48,7 +48,7 @@ const Landing = () => {
   return (
     <View className="flex-1 bg-gray-100">
       <SafeAreaView className="flex-1 py-4">
-        <ComprehensionHeader title="Comprehension - Level 1" subtitle="Listen to this amazing story!" />
+        <ComprehensionHeader title="Comprehension - Listening" subtitle="Listen to this amazing story!" />
         <View className="h-full">
           <CircleWave text={passage} />
           {questions.length > 0 && (
