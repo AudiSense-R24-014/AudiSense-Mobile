@@ -5,15 +5,31 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
-export default function Ling6SeparateTaskView() {
-    const { id } = useLocalSearchParams();
-    const router = useRouter();
-    const [playingIndex, setPlayingIndex] = useState(null); // Track which sound is playing
-    const [responses, setResponses] = useState({}); // Track responses for each sound
-    const [amplificationResponse, setAmplificationResponse] = useState(null); // Track the response for the additional question
-    const [allResponsesCollected, setAllResponsesCollected] = useState(false); // Track if all responses are collected
+interface Sound {
+    sound: string;
+    soundUrl: string;
+}
 
-    const data = {
+interface Data {
+    id: number;
+    sounds: Sound[];
+    voice: string;
+    rate: string;
+    pitch: string;
+    patientID: string | null;
+    createdAt: string;
+}
+
+export default function Ling6SeparateTaskView() {
+    const { id } = useLocalSearchParams<{ id: string }>(); // Type the search params
+    const router = useRouter();
+
+    const [playingIndex, setPlayingIndex] = useState<number | null>(null); // Track which sound is playing
+    const [responses, setResponses] = useState<Record<number, string>>({}); // Track responses for each sound
+    const [amplificationResponse, setAmplificationResponse] = useState<string | null>(null); // Track the response for the additional question
+    const [allResponsesCollected, setAllResponsesCollected] = useState<boolean>(false); // Track if all responses are collected
+
+    const data: Data = {
         id: 1,
         sounds: [
             { sound: "ah", soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ah_20240829222737.wav" },
@@ -31,13 +47,12 @@ export default function Ling6SeparateTaskView() {
     };
 
     useEffect(() => {
-        // Check if all sound responses and the amplification response have been collected
         setAllResponsesCollected(
             Object.keys(responses).length === data.sounds.length && amplificationResponse !== null
         );
     }, [responses, amplificationResponse]);
 
-    const handlePress = (index) => {
+    const handlePress = (index: number) => {
         if (playingIndex === index) {
             setPlayingIndex(null);
             console.log(`Paused sound: ${data.sounds[index].sound}`);
@@ -47,7 +62,7 @@ export default function Ling6SeparateTaskView() {
         }
     };
 
-    const handleResponse = (index, response) => {
+    const handleResponse = (index: number, response: string) => {
         setResponses((prevResponses) => ({
             ...prevResponses,
             [index]: response,
@@ -55,7 +70,7 @@ export default function Ling6SeparateTaskView() {
         console.log(`Response for sound ${data.sounds[index].sound}: ${response}`);
     };
 
-    const handleAmplificationResponse = (response) => {
+    const handleAmplificationResponse = (response: string) => {
         setAmplificationResponse(response);
         console.log(`Amplification device response: ${response}`);
     };
@@ -99,7 +114,7 @@ export default function Ling6SeparateTaskView() {
                         borderRadius: 12,
                         borderWidth: 2,
                         borderColor: '#FFFFFF',
-                        marginBottom: 16, // Add some margin at the bottom
+                        marginBottom: 16,
                     }}
                 >
                     <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -202,12 +217,13 @@ export default function Ling6SeparateTaskView() {
                             backgroundColor: "#6C26A6",
                             borderRadius: 8,
                             paddingVertical: 12,
-                            marginTop: 16,
+                            paddingHorizontal: 24,
                             alignItems: 'center',
+                            marginTop: 16,
                         }}
                         onPress={handleSubmit}
                     >
-                        <Text style={{ color: "#FFF", fontSize: 16, fontWeight: 'bold' }}>Submit Responses</Text>
+                        <Text style={{ color: "#FFF", fontWeight: "bold" }}>Submit</Text>
                     </TouchableOpacity>
                 )}
             </View>

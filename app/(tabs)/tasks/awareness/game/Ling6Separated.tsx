@@ -5,10 +5,26 @@ import { MaterialIcons } from '@expo/vector-icons'; // Importing icon library
 import { LinearGradient } from 'expo-linear-gradient'; // Importing LinearGradient
 import moment from 'moment';
 
+// Define the types for the data structure
+type Sound = {
+    sound: string;
+    soundUrl: string;
+};
+
+type TaskSet = {
+    id: number;
+    sounds: Sound[];
+    voice: string;
+    rate: string;
+    pitch: string;
+    patientID: string | null;
+    createdAt: string;
+};
+
 export default function Ling6Separated() {
     const router = useRouter();
 
-    const data = [
+    const data: TaskSet[] = [
         {
             id: 1,
             sounds: [
@@ -180,7 +196,7 @@ export default function Ling6Separated() {
         }
     ]
 
-    const gradientColors = [
+    const gradientColors: string[][] = [
         ['#927AFF', '#ADA1E2'],
         ['#FF6347', '#FF4500'],
         ['#3CB371', '#2E8B57'],
@@ -195,18 +211,18 @@ export default function Ling6Separated() {
         require('../../../../../assets/images/balls.webp'),
     ];
 
-    const getUniqueRandomGradient = (previousGradient) => {
+    const getUniqueRandomGradient = (previousGradient: string[] | null): string[] => {
         const availableGradients = gradientColors.filter(gradient => gradient !== previousGradient);
         const randomIndex = Math.floor(Math.random() * availableGradients.length);
         return availableGradients[randomIndex];
     };
 
-    const getRandomImage = () => {
+    const getRandomImage = (): any => {
         const randomIndex = Math.floor(Math.random() * images.length);
         return images[randomIndex];
     };
 
-    const handleTaskPress = (taskId) => {
+    const handleTaskPress = (taskId: number) => {
         // Navigate to the detail page for the specific task
         router.push(`/tasks/awareness/game/Ling6SeparateTaskView/${taskId}`);
     };
@@ -226,8 +242,8 @@ export default function Ling6Separated() {
             </LinearGradient>
 
             <ScrollView style={{ flex: 1, padding: 16 }}>
-                {data.reduce((acc, item, index) => {
-                    const previousGradient = acc[index - 1]?.gradient || null;
+                {data.reduce<JSX.Element[]>((acc, item, index) => {
+                    const previousGradient = acc[index - 1]?.props.children.props.style?.colors || null;
                     const currentGradient = getUniqueRandomGradient(previousGradient);
                     const randomImage = getRandomImage();
 
@@ -262,7 +278,7 @@ export default function Ling6Separated() {
                             </LinearGradient>
                         </TouchableOpacity>
                     );
-                    acc[index].gradient = currentGradient;
+
                     return acc;
                 }, [])}
             </ScrollView>
