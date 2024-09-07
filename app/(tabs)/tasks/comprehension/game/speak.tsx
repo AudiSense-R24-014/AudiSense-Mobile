@@ -45,8 +45,7 @@ const Speak = () => {
   };
 
   return (
-    <View className="flex-1 bg-gray-100">
-      <SafeAreaView className="flex-1 py-4">
+      <SafeAreaView className="flex-1 py-4 bg-gray-100 max-h-screen">
         <ComprehensionHeader title="Comprehension - Speech" subtitle="Listen to this amazing story!" />
         <View className="h-full">
           <CircleWave text={passage} />
@@ -63,7 +62,6 @@ const Speak = () => {
           )}
         </View>
       </SafeAreaView>
-    </View>
   );
 };
 

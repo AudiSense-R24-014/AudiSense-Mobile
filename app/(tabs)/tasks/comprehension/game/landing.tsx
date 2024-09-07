@@ -46,8 +46,7 @@ const Landing = () => {
   };
 
   return (
-    <View className="flex-1 bg-gray-100">
-      <SafeAreaView className="flex-1 py-4">
+      <SafeAreaView className="flex-1 py-4 bg-gray-100 h-max-screen">
         <ComprehensionHeader title="Comprehension - Listening" subtitle="Listen to this amazing story!" />
         <View className="h-full">
           <CircleWave text={passage} />
@@ -69,7 +68,6 @@ const Landing = () => {
           )}
         </View>
       </SafeAreaView>
-    </View>
   );
 };
 
