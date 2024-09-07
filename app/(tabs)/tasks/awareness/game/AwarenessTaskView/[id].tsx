@@ -6,9 +6,19 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Audio } from 'expo-av';
 
-interface SoundData {
+import AwarenessSoundTaskService from '@/services/AwarenessService/AwarenessSoundTask.service';
+
+
+interface Sound {
     name: string;
     url: string;
+}
+
+// Define the type for each item in the data array
+interface DataItem {
+    _id: string;
+    sounds: Sound[];
+    createdAt: string;
 }
 
 interface Response {
@@ -34,24 +44,14 @@ export default function AwarenessTaskView() {
 
     const soundRef = useRef<Audio.Sound | null>(null);
 
-    const data = {
-        id: 1,
-        sounds: [
-            {
-                name: "church_bells",
-                url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/church_bells_20240828224154.wav",
-            },
-            {
-                name: "clock_tick",
-                url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/clock_tick_20240828224034.wav",
-            },
-            {
-                name: "car_horn",
-                url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/car_horn_20240828224036.wav",
-            }
-        ],
-        createdAt: "2024-08-28T17:10:38.981Z",
-    };
+    const [data, setData] = useState<DataItem | null>(null);
+
+    useEffect(() => {
+        AwarenessSoundTaskService.getAwarenessSoundTaskByID(id)
+            .then((response) => {
+                setData(response);
+            });
+    }, []);
 
     useEffect(() => {
         if (sound) {
@@ -119,7 +119,7 @@ export default function AwarenessTaskView() {
 
     function allResponsesDone() {
         // Check if all responses are done
-        return responses.length === data.sounds.length && responses.every(response => response.responded);
+        return responses.length === data?.sounds.length && responses.every(response => response.responded);
     }
 
     function handleSubmit() {
@@ -203,7 +203,7 @@ export default function AwarenessTaskView() {
                 </LinearGradient>
 
                 <View style={{ marginTop: 24 }}>
-                    {data.sounds.map((soundItem) => (
+                    {data?.sounds.map((soundItem) => (
                         <View key={soundItem.name}>
                             <TouchableOpacity
                                 onPress={() => playSound(soundItem.url, soundItem.name)}

@@ -3,7 +3,9 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import moment from 'moment';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
+import AwarenessSoundTaskService from '@/services/AwarenessService/AwarenessSoundTask.service';
 
 // Define the type for the sound object
 interface Sound {
@@ -13,7 +15,7 @@ interface Sound {
 
 // Define the type for each item in the data array
 interface DataItem {
-    id: number;
+    _id: string;
     sounds: Sound[];
     createdAt: string;
 }
@@ -38,98 +40,16 @@ const images = [
 export default function BasicAwareness() {
     const router = useRouter();
 
-    const data: DataItem[] = [
-        {
-            id: 1,
-            sounds: [
-                {
-                    name: "church_bells",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/church_bells_20240828224154.wav",
-                },
-                {
-                    name: "clock_tick",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/clock_tick_20240828224034.wav",
-                },
-                {
-                    name: "car_horn",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/car_horn_20240828224036.wav",
-                }
-            ],
-            createdAt: "2024-08-28T17:10:38.981Z",
-        },
-        {
-            id: 2,
-            sounds: [
-                {
-                    name: "church_bells",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/church_bells_20240828224154.wav",
-                },
-                {
-                    name: "clock_tick",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/clock_tick_20240828224034.wav",
-                },
-                {
-                    name: "car_horn",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/car_horn_20240828224036.wav",
-                }
-            ],
-            createdAt: "2024-08-28T17:10:38.981Z",
-        },
-        {
-            id: 3,
-            sounds: [
-                {
-                    name: "church_bells",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/church_bells_20240828224154.wav",
-                },
-                {
-                    name: "clock_tick",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/clock_tick_20240828224034.wav",
-                },
-                {
-                    name: "car_horn",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/car_horn_20240828224036.wav",
-                }
-            ],
-            createdAt: "2024-08-28T17:10:38.981Z",
-        },
-        {
-            id: 4,
-            sounds: [
-                {
-                    name: "church_bells",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/church_bells_20240828224154.wav",
-                },
-                {
-                    name: "clock_tick",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/clock_tick_20240828224034.wav",
-                },
-                {
-                    name: "car_horn",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/car_horn_20240828224036.wav",
-                }
-            ],
-            createdAt: "2024-08-28T17:10:38.981Z",
-        },
-        {
-            id: 5,
-            sounds: [
-                {
-                    name: "church_bells",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/church_bells_20240828224154.wav",
-                },
-                {
-                    name: "clock_tick",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/clock_tick_20240828224034.wav",
-                },
-                {
-                    name: "car_horn",
-                    url: "https://storage.googleapis.com/cdap-awareness.appspot.com/awarenessAudio/car_horn_20240828224036.wav",
-                }
-            ],
-            createdAt: "2024-08-28T17:10:38.981Z",
-        },
-    ];
+    const patientID = '66dc2b782c63571bf9060f94'
+
+    const [data, setData] = useState<DataItem[]>([]);
+
+    useEffect(() => {
+        AwarenessSoundTaskService.getAwarenessSoundTasksByPatientId(patientID)
+            .then((response) => {
+                setData(response);
+            });
+    }, []);
 
     const getUniqueRandomGradient = (previousGradient: GradientColors | null): GradientColors => {
         const availableGradients = gradientColors.filter(gradient => gradient !== previousGradient);
@@ -142,7 +62,7 @@ export default function BasicAwareness() {
         return images[randomIndex];
     };
 
-    const handleTaskPress = (taskId: number) => {
+    const handleTaskPress = (taskId: string) => {
         router.push(`/tasks/awareness/game/AwarenessTaskView/${taskId}`);
     };
 
@@ -168,8 +88,8 @@ export default function BasicAwareness() {
 
                     acc.push(
                         <TouchableOpacity
-                            key={item.id}
-                            onPress={() => handleTaskPress(item.id)}
+                            key={item._id}
+                            onPress={() => handleTaskPress(item._id)}
                             style={styles.taskContainer}
                         >
                             <LinearGradient
