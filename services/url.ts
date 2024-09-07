@@ -12,3 +12,7 @@ export const GET_LING6_SEPARATE_TASKS_BY_PATIENT_ID = (patientID: string) => `${
 export const AWARENESS_BASIC_ID = (id: string) => `${BASE_URL}/awareness-sound/${id}/`;
 export const LING6_TASKS_BY_ID = (id: string) => `${BASE_URL}/ling6-all/${id}/`;
 export const LING6_SEPARATE_TASKS_BY_ID = (id: string) => `${BASE_URL}/ling6-separate/${id}/`;
+
+export const AWARENESS_BASIC_COLLECT_RESPONSE = (id: string) => `${BASE_URL}/awareness-sound/collectResponse/${id}`;
+export const LING6_COLLECT_RESPONSE = (id: string) => `${BASE_URL}/ling6-all/collectResponse/${id}`;
+export const LING6_SEPARATE_COLLECT_RESPONSE = (id: string) => `${BASE_URL}/ling6-separate/collectResponse/${id}`;

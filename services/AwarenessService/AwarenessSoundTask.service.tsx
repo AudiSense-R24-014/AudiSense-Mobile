@@ -22,7 +22,20 @@ const getAwarenessSoundTaskByID = async (id: any) => {
     return data;
 }
 
+const collectResponse = async (id: any, body: any) => {
+    const response = await fetch(URL.AWARENESS_BASIC_COLLECT_RESPONSE(id), {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+    const data = await response.json();
+    return data;
+}
+
 export default {
     getAwarenessSoundTasksByPatientId,
-    getAwarenessSoundTaskByID
+    getAwarenessSoundTaskByID,
+    collectResponse
 }
