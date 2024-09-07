@@ -1,9 +1,11 @@
 import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Image } from 'react-native';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons'; // Importing icon library
 import { LinearGradient } from 'expo-linear-gradient'; // Importing LinearGradient
 import moment from 'moment';
+
+import Ling6SeparateService from '@/services/AwarenessService/Ling6Separate.service';
 
 // Define the types for the data structure
 type Sound = {
@@ -12,7 +14,7 @@ type Sound = {
 };
 
 type TaskSet = {
-    id: number;
+    _id: string;
     sounds: Sound[];
     voice: string;
     rate: string;
@@ -24,177 +26,16 @@ type TaskSet = {
 export default function Ling6Separated() {
     const router = useRouter();
 
-    const data: TaskSet[] = [
-        {
-            id: 1,
-            sounds: [
-                {
-                    sound: "ah",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ah_20240829222737.wav",
-                },
-                {
-                    sound: "mm",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_mm_20240829222737.wav",
-                },
-                {
-                    sound: "sh",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_sh_20240829222737.wav",
-                },
-                {
-                    sound: "ss",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ss_20240829222737.wav",
-                },
-                {
-                    sound: "ee",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ee_20240829222737.wav",
-                },
-                {
-                    sound: "oo",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_oo_20240829222737.wav",
-                }
-            ],
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            patientID: null,
-            createdAt: "2024-08-29T16:58:03.433Z",
-        },
-        {
-            id: 2,
-            sounds: [
-                {
-                    sound: "ah",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ah_20240829222737.wav",
-                },
-                {
-                    sound: "mm",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_mm_20240829222737.wav",
-                },
-                {
-                    sound: "sh",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_sh_20240829222737.wav",
-                },
-                {
-                    sound: "ss",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ss_20240829222737.wav",
-                },
-                {
-                    sound: "ee",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ee_20240829222737.wav",
-                },
-                {
-                    sound: "oo",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_oo_20240829222737.wav",
-                }
-            ],
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            patientID: null,
-            createdAt: "2024-08-29T16:58:03.433Z",
-        },
-        {
-            id: 3,
-            sounds: [
-                {
-                    sound: "ah",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ah_20240829222737.wav",
-                },
-                {
-                    sound: "mm",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_mm_20240829222737.wav",
-                },
-                {
-                    sound: "sh",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_sh_20240829222737.wav",
-                },
-                {
-                    sound: "ss",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ss_20240829222737.wav",
-                },
-                {
-                    sound: "ee",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ee_20240829222737.wav",
-                },
-                {
-                    sound: "oo",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_oo_20240829222737.wav",
-                }
-            ],
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            patientID: null,
-            createdAt: "2024-08-29T16:58:03.433Z",
-        }, {
-            id: 4,
-            sounds: [
-                {
-                    sound: "ah",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ah_20240829222737.wav",
-                },
-                {
-                    sound: "mm",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_mm_20240829222737.wav",
-                },
-                {
-                    sound: "sh",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_sh_20240829222737.wav",
-                },
-                {
-                    sound: "ss",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ss_20240829222737.wav",
-                },
-                {
-                    sound: "ee",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ee_20240829222737.wav",
-                },
-                {
-                    sound: "oo",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_oo_20240829222737.wav",
-                }
-            ],
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            patientID: null,
-            createdAt: "2024-08-29T16:58:03.433Z",
-        },
-        {
-            id: 5,
-            sounds: [
-                {
-                    sound: "ah",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ah_20240829222737.wav",
-                },
-                {
-                    sound: "mm",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_mm_20240829222737.wav",
-                },
-                {
-                    sound: "sh",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_sh_20240829222737.wav",
-                },
-                {
-                    sound: "ss",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ss_20240829222737.wav",
-                },
-                {
-                    sound: "ee",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ee_20240829222737.wav",
-                },
-                {
-                    sound: "oo",
-                    soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_oo_20240829222737.wav",
-                }
-            ],
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            patientID: null,
-            createdAt: "2024-08-29T16:58:03.433Z",
-        }
-    ]
+    const patientID = '66dc2b782c63571bf9060f94'
+
+    const [data, setData] = useState<TaskSet[]>([]);
+
+    useEffect(() => {
+        Ling6SeparateService.getLing6SeparateTasksByPatientId(patientID)
+            .then((response) => {
+                setData(response);
+            });
+    }, []);
 
     const gradientColors: string[][] = [
         ['#927AFF', '#ADA1E2'],
@@ -222,7 +63,7 @@ export default function Ling6Separated() {
         return images[randomIndex];
     };
 
-    const handleTaskPress = (taskId: number) => {
+    const handleTaskPress = (taskId: string) => {
         // Navigate to the detail page for the specific task
         router.push(`/tasks/awareness/game/Ling6SeparateTaskView/${taskId}`);
     };
@@ -249,8 +90,8 @@ export default function Ling6Separated() {
 
                     acc.push(
                         <TouchableOpacity
-                            key={item.id}
-                            onPress={() => handleTaskPress(item.id)}
+                            key={item._id}
+                            onPress={() => handleTaskPress(item._id)}
                             style={{ marginBottom: 16 }}
                         >
                             <LinearGradient
