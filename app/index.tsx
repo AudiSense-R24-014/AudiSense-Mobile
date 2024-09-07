@@ -18,7 +18,7 @@ const Index = () => {
     return null;
   }
   return (
-    <Redirect href="/tasks/awareness/levels" />
+    <Redirect href="/tasks/comprehension/game/speak" />
   );
 };
 
