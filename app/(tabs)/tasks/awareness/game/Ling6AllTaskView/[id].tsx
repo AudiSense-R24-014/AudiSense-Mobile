@@ -37,7 +37,7 @@ export default function Ling6AllTaskView() {
     useEffect(() => {
         Ling6AllTaskService.getLing6AllTaskByID(id)
             .then((response) => {
-                setData(response.data);
+                setData(response);
             });
 
     }, [id]);
@@ -47,6 +47,8 @@ export default function Ling6AllTaskView() {
             const loadSound = async () => {
                 const { sound } = await Audio.Sound.createAsync({ uri: data.soundUrl });
                 setSound(sound);
+
+                await sound.setVolumeAsync(1.0); // 1.0 is max volume
 
                 sound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
                     if (status.isLoaded) {

@@ -1,9 +1,10 @@
 import { SafeAreaView, View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { Audio } from 'expo-av';  // Import from expo-av
 
 import Ling6SeparateService from '@/services/AwarenessService/Ling6Separate.service';
 
@@ -33,6 +34,7 @@ export default function Ling6SeparateTaskView() {
     const [data, setData] = useState<Data | null>(null);
     const [loading, setLoading] = useState<boolean>(true); // Track loading state
     const [error, setError] = useState<string | null>(null); // Track error state
+    const soundRef = useRef<Audio.Sound | null>(null); // Ref for audio sound object
 
     useEffect(() => {
         Ling6SeparateService.getLing6SeparateTaskByID(id)
@@ -58,12 +60,29 @@ export default function Ling6SeparateTaskView() {
         }
     }, [responses, amplificationResponse, data]);
 
+    const playSound = async (soundUrl: string) => {
+        try {
+            if (soundRef.current) {
+                await soundRef.current.unloadAsync(); // Unload any currently playing sound
+            }
+
+            const { sound } = await Audio.Sound.createAsync({ uri: soundUrl });
+            soundRef.current = sound; // Store sound in ref
+            await sound.setVolumeAsync(1.0);
+            await sound.playAsync(); // Play sound
+        } catch (error) {
+            console.error('Error playing sound:', error);
+        }
+    };
+
     const handlePress = (index: number) => {
         if (playingIndex === index) {
             setPlayingIndex(null);
+            soundRef.current?.pauseAsync(); // Pause the currently playing sound
             console.log(`Paused sound: ${data.sounds[index].sound}`);
         } else {
             setPlayingIndex(index);
+            playSound(data.sounds[index].soundUrl); // Play the new sound
             console.log(`Playing sound: ${data.sounds[index].sound}`);
         }
     };
@@ -89,6 +108,12 @@ export default function Ling6SeparateTaskView() {
         console.log("Collected responses:", collectedResponses);
         Alert.alert("Responses Submitted", JSON.stringify(collectedResponses, null, 2));
     };
+
+    useEffect(() => {
+        return () => {
+            soundRef.current?.unloadAsync(); // Unload sound when the component is unmounted
+        };
+    }, []);
 
     if (loading) {
         return (

@@ -8,7 +8,6 @@ import { Audio } from 'expo-av';
 
 import AwarenessSoundTaskService from '@/services/AwarenessService/AwarenessSoundTask.service';
 
-
 interface Sound {
     name: string;
     url: string;
@@ -88,6 +87,7 @@ export default function AwarenessTaskView() {
                 setIsPlaying(status.isPlaying);
             }
         });
+        await newSound.setVolumeAsync(1.0);
 
         await newSound.playAsync();
         setActiveSound(soundName); // Set the clicked sound as the active sound
@@ -103,6 +103,7 @@ export default function AwarenessTaskView() {
             if (isPlaying) {
                 await sound.pauseAsync();
             } else {
+                await sound.setVolumeAsync(1.0);
                 await sound.playAsync();
             }
             setIsPlaying(!isPlaying);
