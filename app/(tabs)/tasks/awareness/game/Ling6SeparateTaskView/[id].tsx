@@ -1,53 +1,93 @@
-import { SafeAreaView, View, Text, TouchableOpacity, Alert } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { SafeAreaView, View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { Audio } from 'expo-av';  // Import from expo-av
+
+import Ling6SeparateService from '@/services/AwarenessService/Ling6Separate.service';
+
+interface Sound {
+    sound: string;
+    soundUrl: string;
+}
+
+interface Data {
+    _id: string;
+    sounds: Sound[];
+    voice: string;
+    rate: string;
+    pitch: string;
+    patientID: string | null;
+    createdAt: string;
+}
 
 export default function Ling6SeparateTaskView() {
-    const { id } = useLocalSearchParams();
+    const { id } = useLocalSearchParams<{ id: string }>(); // Type the search params
     const router = useRouter();
-    const [playingIndex, setPlayingIndex] = useState(null); // Track which sound is playing
-    const [responses, setResponses] = useState({}); // Track responses for each sound
-    const [amplificationResponse, setAmplificationResponse] = useState(null); // Track the response for the additional question
-    const [allResponsesCollected, setAllResponsesCollected] = useState(false); // Track if all responses are collected
 
-    const data = {
-        id: 1,
-        sounds: [
-            { sound: "ah", soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ah_20240829222737.wav" },
-            { sound: "mm", soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_mm_20240829222737.wav" },
-            { sound: "sh", soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_sh_20240829222737.wav" },
-            { sound: "ss", soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ss_20240829222737.wav" },
-            { sound: "ee", soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_ee_20240829222737.wav" },
-            { sound: "oo", soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6separate/ling6_en-US-AriaNeural_oo_20240829222737.wav" }
-        ],
-        voice: "en-US-AriaNeural",
-        rate: "-25%",
-        pitch: "0%",
-        patientID: null,
-        createdAt: "2024-08-29T16:58:03.433Z",
-    };
+    const [playingIndex, setPlayingIndex] = useState<number | null>(null); // Track which sound is playing
+    const [responses, setResponses] = useState<Record<number, string>>({}); // Track responses for each sound
+    const [amplificationResponse, setAmplificationResponse] = useState<string | null>(null); // Track the response for the additional question
+    const [allResponsesCollected, setAllResponsesCollected] = useState<boolean>(false); // Track if all responses are collected
+    const [data, setData] = useState<Data | null>(null);
+    const [loading, setLoading] = useState<boolean>(true); // Track loading state
+    const [error, setError] = useState<string | null>(null); // Track error state
+    const soundRef = useRef<Audio.Sound | null>(null); // Ref for audio sound object
 
     useEffect(() => {
-        // Check if all sound responses and the amplification response have been collected
-        setAllResponsesCollected(
-            Object.keys(responses).length === data.sounds.length && amplificationResponse !== null
-        );
-    }, [responses, amplificationResponse]);
+        Ling6SeparateService.getLing6SeparateTaskByID(id)
+            .then((response) => {
+                setData(response);
+            })
+            .catch((err) => {
+                setError('Failed to fetch data');
+                console.error(err);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [id]);
 
-    const handlePress = (index) => {
+    useEffect(() => {
+        if (data) {
+            const allResponsesCollected =
+                data.sounds && // Ensure data.sounds exists
+                Object.keys(responses).length === data.sounds.length &&
+                amplificationResponse !== null;
+            setAllResponsesCollected(allResponsesCollected);
+        }
+    }, [responses, amplificationResponse, data]);
+
+    const playSound = async (soundUrl: string) => {
+        try {
+            if (soundRef.current) {
+                await soundRef.current.unloadAsync(); // Unload any currently playing sound
+            }
+
+            const { sound } = await Audio.Sound.createAsync({ uri: soundUrl });
+            soundRef.current = sound; // Store sound in ref
+            await sound.setVolumeAsync(1.0);
+            await sound.playAsync(); // Play sound
+        } catch (error) {
+            console.error('Error playing sound:', error);
+        }
+    };
+
+    const handlePress = (index: number) => {
         if (playingIndex === index) {
             setPlayingIndex(null);
+            soundRef.current?.pauseAsync(); // Pause the currently playing sound
             console.log(`Paused sound: ${data.sounds[index].sound}`);
         } else {
             setPlayingIndex(index);
+            playSound(data.sounds[index].soundUrl); // Play the new sound
             console.log(`Playing sound: ${data.sounds[index].sound}`);
         }
     };
 
-    const handleResponse = (index, response) => {
+    const handleResponse = (index: number, response: string) => {
         setResponses((prevResponses) => ({
             ...prevResponses,
             [index]: response,
@@ -55,7 +95,7 @@ export default function Ling6SeparateTaskView() {
         console.log(`Response for sound ${data.sounds[index].sound}: ${response}`);
     };
 
-    const handleAmplificationResponse = (response) => {
+    const handleAmplificationResponse = (response: string) => {
         setAmplificationResponse(response);
         console.log(`Amplification device response: ${response}`);
     };
@@ -69,8 +109,30 @@ export default function Ling6SeparateTaskView() {
         Alert.alert("Responses Submitted", JSON.stringify(collectedResponses, null, 2));
     };
 
+    useEffect(() => {
+        return () => {
+            soundRef.current?.unloadAsync(); // Unload sound when the component is unmounted
+        };
+    }, []);
+
+    if (loading) {
+        return (
+            <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#6C26A6" />
+            </SafeAreaView>
+        );
+    }
+
+    if (error) {
+        return (
+            <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ color: 'red' }}>{error}</Text>
+            </SafeAreaView>
+        );
+    }
+
     return (
-        <SafeAreaView className="flex-1 bg-white">
+        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <LinearGradient
                 colors={['#f2f2f2', '#e6e6e6']}
                 style={{ padding: 16, flexDirection: 'row', alignItems: 'center' }}
@@ -81,13 +143,13 @@ export default function Ling6SeparateTaskView() {
                 >
                     <MaterialIcons name="arrow-back" size={24} color="#6C26A6" />
                 </TouchableOpacity>
-                <Text className="text-2xl font-bold text-white flex-1 text-center" style={{ color: '#6C26A6' }}>
+                <Text style={{ color: '#6C26A6', fontSize: 24, fontWeight: 'bold', textAlign: 'center', flex: 1 }}>
                     Awareness - Level 3 Task
                 </Text>
             </LinearGradient>
 
-            <View className="p-4">
-                <Text className="text-lg font-semibold mb-4">Ling 6 Sound Test</Text>
+            <View style={{ padding: 16 }}>
+                <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 16 }}>Ling 6 Sound Test</Text>
 
                 {/* Additional Question */}
                 <LinearGradient
@@ -99,7 +161,7 @@ export default function Ling6SeparateTaskView() {
                         borderRadius: 12,
                         borderWidth: 2,
                         borderColor: '#FFFFFF',
-                        marginBottom: 16, // Add some margin at the bottom
+                        marginBottom: 16,
                     }}
                 >
                     <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -138,7 +200,7 @@ export default function Ling6SeparateTaskView() {
 
                 {/* Grid Layout for Sounds */}
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-                    {data.sounds.map((item, index) => (
+                    {data?.sounds && data.sounds.length > 0 && data.sounds.map((item, index) => (
                         <LinearGradient
                             key={index}
                             colors={['#9b7dc8', '#e8ace1']} // Gradient colors
@@ -202,12 +264,13 @@ export default function Ling6SeparateTaskView() {
                             backgroundColor: "#6C26A6",
                             borderRadius: 8,
                             paddingVertical: 12,
-                            marginTop: 16,
+                            paddingHorizontal: 24,
                             alignItems: 'center',
+                            marginTop: 16,
                         }}
                         onPress={handleSubmit}
                     >
-                        <Text style={{ color: "#FFF", fontSize: 16, fontWeight: 'bold' }}>Submit Responses</Text>
+                        <Text style={{ color: "#FFF", fontWeight: "bold" }}>Submit</Text>
                     </TouchableOpacity>
                 )}
             </View>
