@@ -1,12 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, Button } from 'react-native';
 import { Audio } from 'expo-av';
+import DiscriminationTaskService from '@/services/DiscriminationTask.service';
 
 const DiscriminationLevel2 = () => {
     const [isPlayingFour, setIsPlayingFour] = useState(false);
     const [isPlayingRoar, setIsPlayingRoar] = useState(false);
     const [recordingAudio, setRecordingAudio] = useState<any>();
     const [recordings, setRecordings] = useState<{ sound: any; duration: string; file: any; }[]>([]);
+
+    const [firstWord, setFirstWord] = useState("");
+    const [secondWord, setSecondWord] = useState("");
+  
+    useEffect(() => {
+      DiscriminationTaskService.getDiscriminationTaskById("66db2163230c2790b39a8df3").then((data) => {
+        setFirstWord(data?.word1);
+        setSecondWord(data?.word2);
+      });
+    }, []);
 
     async function startRecording() {
         try {
