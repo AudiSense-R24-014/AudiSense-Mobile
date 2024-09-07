@@ -4,10 +4,20 @@ import * as Speech from 'expo-speech';
 import { router } from "expo-router";
 import QuestionButton from '@/components/molecules/QuestionButton';
 import AnswerButton from '@/components/molecules/AnswerButton';
+import DiscriminationTaskService from '@/services/DiscriminationTask.service';
 
 const DiscriminationLevel1 = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedWord, setSelectedWord] = useState(null);
+  const [firstWord, setFirstWord] = useState("");
+  const [secondWord, setSecondWord] = useState("");
+
+  useEffect(() => {
+    DiscriminationTaskService.getDiscriminationTaskById("66db2163230c2790b39a8df3").then((data) => {
+      setFirstWord(data?.word1);
+      setSecondWord(data?.word2);
+    });
+  }, []);
 
   //   const catSound = new Sound('cat.mp3', Sound.MAIN_BUNDLE, (error) => {
   //     if (error) {
@@ -57,7 +67,7 @@ const DiscriminationLevel1 = () => {
                 <Text className="text-sm">0:15</Text>
             </TouchableOpacity> */}
       <View>
-        <QuestionButton text="Cat" />
+        <QuestionButton text={firstWord} />
       </View>
 
       <Text className="text-xl font-bold mb-5 text-center self-center">Cat</Text>
@@ -69,8 +79,8 @@ const DiscriminationLevel1 = () => {
         <TouchableOpacity className={`bg-purple-300 p-4 rounded-lg flex-1 mr-2 ${selectedWord === 'mat' ? 'bg-gray-400' : ''}`} onPress={() => router.push("./levelTwo")}>
 
         </TouchableOpacity> */}
-        <AnswerButton character="1" text="Cat" />
-        <AnswerButton character="2" text="Bat" />
+        <AnswerButton character="1" text={secondWord} />
+        <AnswerButton character="2" text={firstWord} />
       </View>
       <View className="mt-20">
         <TouchableOpacity className="bg-purple-800 p-2 rounded-lg w-3/4 mx-auto" onPress={kathakarapn}>
