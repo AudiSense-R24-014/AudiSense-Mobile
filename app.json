@@ -15,8 +15,10 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "This app requires access to the microphone.",
-        "NSAppleMusicUsageDescription": "This app requires access to Apple Music."
+        "NSMicrophoneUsageDescription": "This app requires access to the microphone to record and playback audio.",
+        "NSAppleMusicUsageDescription": "This app requires access to your Apple Music library for audio playback.",
+        "NSBluetoothAlwaysUsageDescription": "This app uses Bluetooth to connect to external audio devices for playback.",
+        "NSAudioUsageDescription": "This app requires access to audio playback for the full experience."
       }
     },
     "android": {
@@ -27,7 +29,9 @@
       "permissions": [
         "RECORD_AUDIO",
         "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET",
+        "BLUETOOTH"
       ]
     },
     "web": {
@@ -36,7 +40,14 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow AudiSense to access your microphone for sound recording.",
+          "bluetoothPermission": "Allow AudiSense to connect to external audio devices for playback."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
