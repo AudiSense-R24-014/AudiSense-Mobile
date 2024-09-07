@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Image, Platform, Pressable, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Image, Pressable, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { MotiView } from "moti";
 import { Easing } from "react-native-reanimated";
