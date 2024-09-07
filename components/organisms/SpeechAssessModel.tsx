@@ -31,7 +31,7 @@ const SpeechAssessModel = ({
       <View className="flex-row justify-center mt-2">
           <SpeechInput  lockRecording={lockRecording} recordedAudio={recordedAudio}/>
       </View>
-      <View className="flex-row justify-center m-4 mt-12 mx-10">
+      <View className="flex-row justify-center m-4 mt-4 mx-10">
         {currentQuestionIndex != 0 && (
           <View className="flex-1 justify-center w-1/2 m-4">
             <Pressable onPress={onBack}>
