@@ -6,8 +6,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 
+import Ling6AllTaskService from '@/services/AwarenessService/Ling6AllTask.service';
+
 interface Data {
-    id: number;
+    _id: string;
     voice: string;
     rate: string;
     pitch: string;
@@ -30,43 +32,44 @@ export default function Ling6AllTaskView() {
     const [soundResponse, setSoundResponse] = useState<string | null>(null);
     const [showSubmitButton, setShowSubmitButton] = useState(false);
 
-    const data: Data = {
-        id: 1,
-        voice: "en-US-AriaNeural",
-        rate: "-25%",
-        pitch: "0%",
-        breakTime: "1s",
-        soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6All/ling6_en-US-AriaNeural_combined_20240829225334.wav",
-        patientID: "1234",
-        createdAt: "2024-08-29T17:23:39.463Z",
-    };
+    const [data, setData] = useState<Data | null>(null);
 
     useEffect(() => {
-        async function loadSound() {
-            const { sound } = await Audio.Sound.createAsync({ uri: data.soundUrl });
-            setSound(sound);
-
-            sound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
-                if (status.isLoaded) {
-                    setPlaybackPosition(status.positionMillis ?? 0);
-                    setPlaybackDuration(status.durationMillis ?? 0);
-
-                    if (status.didJustFinish) {
-                        setResponseShown(true);
-                        setActiveSound(data.soundUrl);
-                    }
-                }
+        Ling6AllTaskService.getLing6AllTaskByID(id)
+            .then((response) => {
+                setData(response.data);
             });
+
+    }, [id]);
+
+    useEffect(() => {
+        if (data?.soundUrl) {
+            const loadSound = async () => {
+                const { sound } = await Audio.Sound.createAsync({ uri: data.soundUrl });
+                setSound(sound);
+
+                sound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
+                    if (status.isLoaded) {
+                        setPlaybackPosition(status.positionMillis ?? 0);
+                        setPlaybackDuration(status.durationMillis ?? 0);
+
+                        if (status.didJustFinish) {
+                            setResponseShown(true);
+                            setActiveSound(data.soundUrl);
+                        }
+                    }
+                });
+            };
+
+            loadSound();
+
+            return () => {
+                if (sound) {
+                    sound.unloadAsync();
+                }
+            };
         }
-
-        loadSound();
-
-        return () => {
-            if (sound) {
-                sound.unloadAsync();
-            }
-        };
-    }, [data.soundUrl]);
+    }, [data?.soundUrl]);
 
     const handlePlayPauseSound = async () => {
         if (sound) {
@@ -91,6 +94,7 @@ export default function Ling6AllTaskView() {
     const handleSubmit = () => {
         console.log('Amplification Response:', amplificationResponse);
         console.log('Sound Response:', soundResponse);
+        // Handle submission logic here
     };
 
     return (
@@ -190,7 +194,6 @@ export default function Ling6AllTaskView() {
 }
 
 const styles = StyleSheet.create({
-    // Same style definitions from the previous code
     container: { flex: 1, backgroundColor: 'white' },
     header: { padding: 16, flexDirection: 'row', alignItems: 'center' },
     backButton: { marginRight: 16 },

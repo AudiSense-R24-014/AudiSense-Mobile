@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, Text, TouchableOpacity, SafeAreaView, Image, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import moment from 'moment';
 
+import Ling6AllTaskService from '@/services/AwarenessService/Ling6AllTask.service';
+
 interface TaskData {
-    id: number;
+    _id: string;
     voice: string;
     rate: string;
     pitch: string;
@@ -34,58 +36,16 @@ const images = [
 const Ling6Combined: React.FC = () => {
     const router = useRouter();
 
-    const data: TaskData[] = [
-        {
-            id: 1,
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            breakTime: "1s",
-            soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6All/ling6_en-US-AriaNeural_combined_20240829225334.wav",
-            patientID: "1234",
-            createdAt: "2024-08-29T17:23:39.463Z",
-        },
-        {
-            id: 2,
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            breakTime: "1s",
-            soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6All/ling6_en-US-AriaNeural_combined_20240829225334.wav",
-            patientID: "1234",
-            createdAt: "2024-08-29T17:23:39.463Z",
-        },
-        {
-            id: 3,
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            breakTime: "1s",
-            soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6All/ling6_en-US-AriaNeural_combined_20240829225334.wav",
-            patientID: "1234",
-            createdAt: "2024-08-29T17:23:39.463Z",
-        },
-        {
-            id: 4,
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            breakTime: "1s",
-            soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6All/ling6_en-US-AriaNeural_combined_20240829225334.wav",
-            patientID: "1234",
-            createdAt: "2024-08-29T17:23:39.463Z",
-        },
-        {
-            id: 5,
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            breakTime: "1s",
-            soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6All/ling6_en-US-AriaNeural_combined_20240829225334.wav",
-            patientID: "1234",
-            createdAt: "2024-08-29T17:23:39.463Z",
-        },
-    ];
+    const patientID = '66dc2b782c63571bf9060f94'
+
+    const [data, setData] = useState<TaskData[]>([]);
+
+    useEffect(() => {
+        Ling6AllTaskService.getLing6AllTasksByPatientId(patientID)
+            .then((response) => {
+                setData(response);
+            });
+    }, []);
 
     const getUniqueRandomGradient = (previousGradient: string[]): string[] => {
         const availableGradients = gradientColors.filter(gradient => gradient !== previousGradient);
@@ -98,7 +58,7 @@ const Ling6Combined: React.FC = () => {
         return images[randomIndex];
     };
 
-    const handleTaskPress = (taskId: number) => {
+    const handleTaskPress = (taskId: string) => {
         router.push(`/tasks/awareness/game/Ling6AllTaskView/${taskId}`);
     };
 
@@ -122,8 +82,8 @@ const Ling6Combined: React.FC = () => {
 
                     acc.push(
                         <TouchableOpacity
-                            key={item.id}
-                            onPress={() => handleTaskPress(item.id)}
+                            key={item._id}
+                            onPress={() => handleTaskPress(item._id)}
                             style={styles.taskContainer}
                         >
                             <LinearGradient
