@@ -17,6 +17,7 @@ interface Sound {
 interface DataItem {
     _id: string;
     sounds: Sound[];
+    isResponded: boolean;
     createdAt: string;
 }
 
@@ -107,7 +108,7 @@ export default function BasicAwareness() {
 
                                 <View style={styles.taskFooter}>
                                     <Text style={styles.taskStatus}>
-                                        Incomplete
+                                        {item.isResponded ? 'Completed' : 'Not Completed'}
                                     </Text>
                                     <Image
                                         source={randomImage}

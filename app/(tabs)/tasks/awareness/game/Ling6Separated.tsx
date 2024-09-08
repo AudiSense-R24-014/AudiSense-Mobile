@@ -21,6 +21,7 @@ type TaskSet = {
     pitch: string;
     patientID: string | null;
     createdAt: string;
+    isResponded: boolean;
 };
 
 export default function Ling6Separated() {
@@ -109,7 +110,7 @@ export default function Ling6Separated() {
 
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', flex: 1 }}>
-                                        Incomplete
+                                        {item.isResponded ? 'Completed' : 'Not Completed'}
                                     </Text>
                                     <Image
                                         source={randomImage}
