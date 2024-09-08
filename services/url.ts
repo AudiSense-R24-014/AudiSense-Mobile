@@ -15,6 +15,7 @@ export const LING6_COLLECT_RESPONSE = (id: string) => `${BASE_URL}/ling6-all/col
 export const LING6_SEPARATE_COLLECT_RESPONSE = (id: string) => `${BASE_URL}/ling6-separate/collectResponse/${id}`;
 
 export const COMPREHENSIVE_TASK_BY_ID = (id: number) => `${BASE_URL}/comprehension-task/${id}`;
+export const COMPREHENSIVE_ACTIVITY_BY_ID = (id: number) => `${BASE_URL}/comprehension-activity/${id}`;
 
 export const IDENTIFICATION_LEVEL1_TASK_BY_PATIENT_ID = (id: number) => `${BASE_URL}/api/level1/patientID/${id}`;
 
