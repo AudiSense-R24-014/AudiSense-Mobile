@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, Button } from 'react-native';
 import { Audio } from 'expo-av';
 import DiscriminationTaskService from '@/services/DiscriminationTask.service';
+import QuestionButton from '@/components/molecules/QuestionButton';
+import AnswerButton from '@/components/molecules/AnswerButton';
+import SpeechInput from '@/components/molecules/SpeechInput';
 
 const DiscriminationLevel2 = () => {
     const [isPlayingFour, setIsPlayingFour] = useState(false);
@@ -68,6 +71,9 @@ const DiscriminationLevel2 = () => {
     function clearRecordings() {
         setRecordings([]);
     }
+    const capitalizeFirstLetter = (word:string) => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      };
 
     return (
         <View className="flex-1 bg-white items-center">
@@ -78,7 +84,7 @@ const DiscriminationLevel2 = () => {
 
             <View className="flex-row justify-around w-full mb-20">
                 <View className="items-center w-2/5">
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         className="bg-purple-100 p-5 rounded-lg items-center"
                         disabled={isPlayingFour}
                     >
@@ -86,11 +92,14 @@ const DiscriminationLevel2 = () => {
                             <Image className="w-5 h-5 mr-2" />
                             <View className="flex-1 h-1 bg-purple-700 rounded" />
                         </View>
-                    </TouchableOpacity>
-                    <Text className="text-lg font-bold text-purple-700 mt-2">Four</Text>
+                    </TouchableOpacity> */}
+                    <View>
+                        <QuestionButton text={firstWord}/>
+                    </View>
+                    <Text className="text-lg font-bold text-purple-700 mt-2">{capitalizeFirstLetter(firstWord)}</Text>
                 </View>
                 <View className="items-center w-2/5">
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         className="bg-purple-100 p-5 rounded-lg items-center"
                         disabled={isPlayingRoar}
                     >
@@ -98,9 +107,17 @@ const DiscriminationLevel2 = () => {
                             <Image className="w-5 h-5 mr-2" />
                             <View className="flex-1 h-1 bg-purple-700 rounded" />
                         </View>
-                    </TouchableOpacity>
-                    <Text className="text-lg font-bold text-purple-700 mt-2">Roar</Text>
+                    </TouchableOpacity> */}
+                    <View>
+                        <AnswerButton text={secondWord} character={''}/>
+                    </View>
+                    <Text className="text-lg font-bold text-purple-700 mt-2">{capitalizeFirstLetter(secondWord)}</Text>
                 </View>
+            </View>
+            <View>
+                <SpeechInput lockRecording={function (recording: any): void {
+                    throw new Error('Function not implemented.');
+                } } recordedAudio={undefined}/>
             </View>
 
             <View className="flex-row justify-center mb-20 space-x-32">
