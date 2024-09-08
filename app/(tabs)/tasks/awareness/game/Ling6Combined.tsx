@@ -16,6 +16,7 @@ interface TaskData {
     soundUrl: string;
     patientID: string;
     createdAt: string;
+    isResponded: boolean;
 }
 
 const gradientColors: string[][] = [
@@ -98,7 +99,9 @@ const Ling6Combined: React.FC = () => {
                                 </View>
 
                                 <View style={styles.taskFooter}>
-                                    <Text style={styles.taskStatus}>Incomplete</Text>
+                                    <Text style={styles.taskStatus}>
+                                        {item.isResponded ? 'Completed' : 'Not Completed'}
+                                    </Text>
                                     <Image
                                         source={randomImage}
                                         style={styles.taskImage}
