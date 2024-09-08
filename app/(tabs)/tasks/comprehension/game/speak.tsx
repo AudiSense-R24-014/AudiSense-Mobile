@@ -5,6 +5,7 @@ import CircleWave from "@/components/molecules/CircleWave";
 import ComprehensionTaskService from "@/services/ComprehensionTask.service";
 import SpeechAssessModel from "@/components/organisms/SpeechAssessModel";
 import { storage, ref, uploadBytes, getDownloadURL } from "@/firebaseConfig";
+import { router } from "expo-router";
 
 const Speak = () => {
   const [passage, setPassage] = useState("");
@@ -23,12 +24,10 @@ const Speak = () => {
 
   useEffect(() => {
     // Fetch the comprehension task
-    ComprehensionTaskService.getComprehensiveTaskById(
-      "66d21b756827cbf410a54aa6"
-    )
+    ComprehensionTaskService.getActivityById("66ddd34871a0510601f707dc")
       .then((data) => {
-        setPassage(data?.passage);
-        setQuestions(data?.questions);
+        setPassage(data?.comprehensionTask?.passage);
+        setQuestions(data?.comprehensionTask?.questions);
       })
       .catch((error) => {
         console.error("Error fetching comprehension task:", error);
@@ -78,12 +77,27 @@ const Speak = () => {
           urls[i] = downloadURL;
         }
       }
-      
+      persist(urls);
       console.log("Uploaded recording URLs:", urls);
     } catch (error) {
       console.error("Error uploading recordings:", error);
     }
   };
+
+  const persist = (recoringUrls: any[]) => {
+    ComprehensionTaskService.updateActivityById("66ddd34871a0510601f707dc", {
+      providedAnswers: recoringUrls,
+      status: "Need Assessment",
+    })
+      .then((data) => {
+        console.log("Persisted locked answers:", data);
+        router.back();
+      })
+      .catch((error) => {
+        console.error("Error persisting locked answers:", error);
+      });
+  };
+
   return (
     <SafeAreaView className="flex-1 py-4 bg-gray-100 max-h-screen">
       <ComprehensionHeader
