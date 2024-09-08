@@ -12,6 +12,7 @@ module.exports = {
         "inter-medium": ["Inter_500Medium", "sans-serif"],
         "inter-semibold": ["Inter_600SemiBold", "sans-serif"],
         "inter-bold": ["Inter_700Bold", "sans-serif"],
+        sevillana: ["Sevillana_400Regular", "sans-serif"],
       },
       colors: {
         "audi-purple": "#6C26A6",

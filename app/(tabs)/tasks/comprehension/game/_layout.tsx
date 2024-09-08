@@ -4,7 +4,7 @@ const GameLayout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="landing"
+        name="listen"
         options={{
           headerShown: false,
         }}
