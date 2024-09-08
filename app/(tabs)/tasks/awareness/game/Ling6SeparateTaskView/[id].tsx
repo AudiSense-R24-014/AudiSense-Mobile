@@ -1,4 +1,4 @@
-import { SafeAreaView, View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { ScrollView, SafeAreaView, View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -29,7 +29,7 @@ export default function Ling6SeparateTaskView() {
 
     const [playingIndex, setPlayingIndex] = useState<number | null>(null); // Track which sound is playing
     const [responses, setResponses] = useState<Record<number, string>>({}); // Track responses for each sound
-    const [amplificationResponse, setAmplificationResponse] = useState<string | null>(null); // Track the response for the additional question
+    const [amplificationResponse, setAmplificationResponse] = useState<boolean | null>(null); // Track the response for the additional question
     const [allResponsesCollected, setAllResponsesCollected] = useState<boolean>(false); // Track if all responses are collected
     const [data, setData] = useState<Data | null>(null);
     const [loading, setLoading] = useState<boolean>(true); // Track loading state
@@ -90,23 +90,40 @@ export default function Ling6SeparateTaskView() {
     const handleResponse = (index: number, response: string) => {
         setResponses((prevResponses) => ({
             ...prevResponses,
-            [index]: response,
+            [index]: response,  // Ensure you are updating response for the correct sound
         }));
         console.log(`Response for sound ${data.sounds[index].sound}: ${response}`);
     };
 
-    const handleAmplificationResponse = (response: string) => {
+    const handleAmplificationResponse = (response: boolean) => {
         setAmplificationResponse(response);
         console.log(`Amplification device response: ${response}`);
     };
 
     const handleSubmit = () => {
+        const recordedResponses = [
+            { name: 'ah', response: responses[0] === 'Yes' ? true : false, },
+            { name: 'mm', response: responses[1] === 'Yes' ? true : false, },
+            { name: 'sh', response: responses[2] === 'Yes' ? true : false, },
+            { name: 'ss', response: responses[3] === 'Yes' ? true : false, },
+            { name: 'ee', response: responses[4] === 'Yes' ? true : false, },
+            { name: 'oo', response: responses[5] === 'Yes' ? true : false, }
+        ]
         const collectedResponses = {
-            ...responses,
-            amplification_device: amplificationResponse,
+            responses: recordedResponses,
+            isImplantOn: amplificationResponse,
         };
-        console.log("Collected responses:", collectedResponses);
-        Alert.alert("Responses Submitted", JSON.stringify(collectedResponses, null, 2));
+        // console.log("Collected responses:", collectedResponses);
+        // Alert.alert("Responses Submitted", JSON.stringify(collectedResponses, null, 2));
+        Ling6SeparateService.collectResponse(id, collectedResponses)
+            .then(() => {
+                Alert.alert("Responses submitted successfully!");
+                router.push(`/tasks/awareness/levels`);
+            })
+            .catch((error) => {
+                Alert.alert("Failed to submit responses. Please try again later.");
+                console.error("Failed to submit responses", error);
+            });
     };
 
     useEffect(() => {
@@ -148,7 +165,7 @@ export default function Ling6SeparateTaskView() {
                 </Text>
             </LinearGradient>
 
-            <View style={{ padding: 16 }}>
+            <ScrollView style={{ padding: 16 }}>
                 <Text style={{ fontSize: 18, fontWeight: '600', marginBottom: 16 }}>Ling 6 Sound Test</Text>
 
                 {/* Additional Question */}
@@ -171,9 +188,9 @@ export default function Ling6SeparateTaskView() {
 
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <TouchableOpacity
-                                onPress={() => handleAmplificationResponse('Yes')}
+                                onPress={() => handleAmplificationResponse(true)}
                                 style={{
-                                    backgroundColor: amplificationResponse === 'Yes' ? "#4CAF50" : "#e0e0e0",
+                                    backgroundColor: amplificationResponse === true ? "#4CAF50" : "#e0e0e0",
                                     borderRadius: 8,
                                     paddingVertical: 8,
                                     paddingHorizontal: 16,
@@ -184,9 +201,9 @@ export default function Ling6SeparateTaskView() {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => handleAmplificationResponse('No')}
+                                onPress={() => handleAmplificationResponse(false)}
                                 style={{
-                                    backgroundColor: amplificationResponse === 'No' ? "#F44336" : "#e0e0e0",
+                                    backgroundColor: amplificationResponse === false ? "#F44336" : "#e0e0e0",
                                     borderRadius: 8,
                                     paddingVertical: 8,
                                     paddingHorizontal: 16,
@@ -225,55 +242,51 @@ export default function Ling6SeparateTaskView() {
                                 />
                             </TouchableOpacity>
 
-                            {/* Response Buttons */}
-                            {playingIndex === index && (
-                                <View style={{ flexDirection: 'row', marginTop: 8, justifyContent: 'space-between' }}>
-                                    <TouchableOpacity
-                                        style={{
-                                            backgroundColor: responses[index] === "Yes" ? "#4CAF50" : "#e0e0e0",
-                                            borderRadius: 8,
-                                            paddingVertical: 8,
-                                            paddingHorizontal: 16,
-                                            marginRight: 8,
-                                        }}
-                                        onPress={() => handleResponse(index, "Yes")}
-                                    >
-                                        <Text style={{ color: "#FFF", fontWeight: "bold" }}>Yes</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style={{
-                                            backgroundColor: responses[index] === "No" ? "#F44336" : "#e0e0e0",
-                                            borderRadius: 8,
-                                            paddingVertical: 8,
-                                            paddingHorizontal: 16,
-                                        }}
-                                        onPress={() => handleResponse(index, "No")}
-                                    >
-                                        <Text style={{ color: "#FFF", fontWeight: "bold" }}>No</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )}
+                            {/* Response Options */}
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 12 }}>
+                                <TouchableOpacity
+                                    onPress={() => handleResponse(index, 'Yes')}
+                                    style={{
+                                        backgroundColor: responses[index] === 'Yes' ? '#4CAF50' : '#e0e0e0',
+                                        paddingVertical: 8,
+                                        paddingHorizontal: 16,
+                                        borderRadius: 8,
+                                    }}
+                                >
+                                    <Text style={{ color: '#FFF', fontWeight: 'bold' }}>Yes</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    onPress={() => handleResponse(index, 'No')}
+                                    style={{
+                                        backgroundColor: responses[index] === 'No' ? '#F44336' : '#e0e0e0',
+                                        paddingVertical: 8,
+                                        paddingHorizontal: 16,
+                                        borderRadius: 8,
+                                    }}
+                                >
+                                    <Text style={{ color: '#FFF', fontWeight: 'bold' }}>No</Text>
+                                </TouchableOpacity>
+                            </View>
                         </LinearGradient>
                     ))}
                 </View>
 
-                {/* Submit Button */}
                 {allResponsesCollected && (
                     <TouchableOpacity
                         style={{
-                            backgroundColor: "#6C26A6",
-                            borderRadius: 8,
+                            backgroundColor: '#6C26A6',
                             paddingVertical: 12,
-                            paddingHorizontal: 24,
-                            alignItems: 'center',
+                            borderRadius: 8,
                             marginTop: 16,
+                            alignItems: 'center',
                         }}
                         onPress={handleSubmit}
                     >
-                        <Text style={{ color: "#FFF", fontWeight: "bold" }}>Submit</Text>
+                        <Text style={{ color: '#FFF', fontSize: 16, fontWeight: 'bold' }}>Submit Responses</Text>
                     </TouchableOpacity>
                 )}
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }

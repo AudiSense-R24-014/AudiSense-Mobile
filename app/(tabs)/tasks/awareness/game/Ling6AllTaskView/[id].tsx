@@ -1,4 +1,4 @@
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,7 +22,7 @@ interface Data {
 export default function Ling6AllTaskView() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
-    const [amplificationResponse, setAmplificationResponse] = useState<string | null>(null);
+    const [amplificationResponse, setAmplificationResponse] = useState<boolean | null>(null); // Track the response for the additional question
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [playbackPosition, setPlaybackPosition] = useState(0);
@@ -84,7 +84,7 @@ export default function Ling6AllTaskView() {
         }
     };
 
-    const handleAmplificationResponse = (response: string) => {
+    const handleAmplificationResponse = (response: boolean) => {
         setAmplificationResponse(response);
     };
 
@@ -94,9 +94,26 @@ export default function Ling6AllTaskView() {
     };
 
     const handleSubmit = () => {
-        console.log('Amplification Response:', amplificationResponse);
-        console.log('Sound Response:', soundResponse);
+        // console.log('Amplification Response:', amplificationResponse);
+        // console.log('Sound Response:', soundResponse);
+
+        const collectedResponses = {
+            response: soundResponse === 'Yes' ? true : false,
+            isImplantOn: amplificationResponse,
+        };
         // Handle submission logic here
+        // console.log("Collected responses:", collectedResponses);
+
+        Ling6AllTaskService.collectResponse(id, collectedResponses)
+            .then(() => {
+                Alert.alert("Responses submitted successfully!");
+                router.push(`/tasks/awareness/levels`);
+            })
+            .catch((error) => {
+                Alert.alert("Failed to submit responses. Please try again later.");
+                console.error("Failed to submit responses", error);
+            });
+
     };
 
     return (
@@ -124,20 +141,20 @@ export default function Ling6AllTaskView() {
 
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
-                                onPress={() => handleAmplificationResponse('Yes')}
+                                onPress={() => handleAmplificationResponse(true)}
                                 style={[
                                     styles.responseButton,
-                                    amplificationResponse === 'Yes' ? styles.selectedYesButton : styles.defaultButton
+                                    amplificationResponse === true ? styles.selectedYesButton : styles.defaultButton
                                 ]}
                             >
                                 <Text style={styles.responseButtonText}>Yes</Text>
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => handleAmplificationResponse('No')}
+                                onPress={() => handleAmplificationResponse(false)}
                                 style={[
                                     styles.responseButton,
-                                    amplificationResponse === 'No' ? styles.selectedNoButton : styles.defaultButton
+                                    amplificationResponse === false ? styles.selectedNoButton : styles.defaultButton
                                 ]}
                             >
                                 <Text style={styles.responseButtonText}>No</Text>

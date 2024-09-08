@@ -39,7 +39,7 @@ export default function AwarenessTaskView() {
     const [responses, setResponses] = useState<Response[]>([]); // Array to store responses
     const [responseShown, setResponseShown] = useState<boolean>(false); // Flag to control showing responses
     const [activeSound, setActiveSound] = useState<string | null>(null); // Track the currently clicked sound
-    const [amplificationResponse, setAmplificationResponse] = useState<string | null>(null); // Track the response for the additional question
+    const [amplificationResponse, setAmplificationResponse] = useState<boolean | null>(null); // Track the response for the additional question
 
     const soundRef = useRef<Audio.Sound | null>(null);
 
@@ -124,16 +124,35 @@ export default function AwarenessTaskView() {
     }
 
     function handleSubmit() {
+
+        const finalizedResponses = responses.map(response => {
+            return {
+                name: response.name,
+                response: response.result,
+            };
+        });
+
         // Handle the submit action here
         const collectedResponses = {
-            responses,
-            amplification_device: amplificationResponse,
+            responses: finalizedResponses,
+            isImplantOn: amplificationResponse,
         };
-        console.log("Collected responses:", collectedResponses);
-        Alert.alert("Responses Submitted", JSON.stringify(collectedResponses, null, 2));
+        // Handle submission logic here
+        // console.log("Collected responses:", collectedResponses);
+
+        AwarenessSoundTaskService.collectResponse(id, collectedResponses)
+            .then(() => {
+                Alert.alert("Responses submitted successfully!");
+                router.push(`/tasks/awareness/levels`);
+            })
+            .catch((error) => {
+                Alert.alert("Failed to submit responses. Please try again later.");
+                console.error("Failed to submit responses", error);
+            });
+
     }
 
-    const handleAmplificationResponse = (response: string) => {
+    const handleAmplificationResponse = (response: boolean) => {
         setAmplificationResponse(response);
         console.log(`Amplification device response: ${response}`);
     };
@@ -176,9 +195,9 @@ export default function AwarenessTaskView() {
 
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <TouchableOpacity
-                                onPress={() => handleAmplificationResponse('Yes')}
+                                onPress={() => handleAmplificationResponse(true)}
                                 style={{
-                                    backgroundColor: amplificationResponse === 'Yes' ? "#4CAF50" : "#e0e0e0",
+                                    backgroundColor: amplificationResponse === true ? "#4CAF50" : "#e0e0e0",
                                     borderRadius: 8,
                                     paddingVertical: 8,
                                     paddingHorizontal: 16,
@@ -189,9 +208,9 @@ export default function AwarenessTaskView() {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => handleAmplificationResponse('No')}
+                                onPress={() => handleAmplificationResponse(false)}
                                 style={{
-                                    backgroundColor: amplificationResponse === 'No' ? "#F44336" : "#e0e0e0",
+                                    backgroundColor: amplificationResponse === false ? "#F44336" : "#e0e0e0",
                                     borderRadius: 8,
                                     paddingVertical: 8,
                                     paddingHorizontal: 16,
