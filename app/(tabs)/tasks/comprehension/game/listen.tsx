@@ -4,6 +4,7 @@ import ComprehensionHeader from "@/components/organisms/ComprehensionHeader";
 import CircleWave from "@/components/molecules/CircleWave";
 import MCQModel from "@/components/organisms/MCQModel";
 import ComprehensionTaskService from "@/services/ComprehensionTask.service";
+import { router } from "expo-router";
 
 const Listen = () => {
   const [passage, setPassage] = useState("");
@@ -64,6 +65,7 @@ const Listen = () => {
     })
       .then((data) => {
         console.log("Persisted locked answers:", data);
+        router.back();
       })
       .catch((error) => {
         console.error("Error persisting locked answers:", error);

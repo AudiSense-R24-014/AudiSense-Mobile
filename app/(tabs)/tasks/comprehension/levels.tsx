@@ -37,7 +37,7 @@ const Levels = () => {
           <View className="flex-1 items-center space-y-6">
             {/* Play Now Button */}
             <Pressable
-              onPress={() => router.push("/tasks/comprehension/game")}
+              onPress={() => router.push("/tasks/comprehension/game/listen")}
               className="bg-slate-900 py-3 px-6 w-5/6 rounded-lg shadow-md border border-rose-600"
             >
               <Text className="text-rose-400 text-2xl font-inter-semibold">Comprehension Activity 🎮</Text>
@@ -45,7 +45,7 @@ const Levels = () => {
               <Text className="text-gray-300 text-base font-semibold">Incomplete</Text>
             </Pressable>
             <Pressable
-              onPress={() => router.push("/tasks/comprehension/game")}
+              onPress={() => router.push("/tasks/comprehension/game/speak")}
               className="bg-slate-900 py-3 px-6 w-5/6 rounded-lg shadow-md border border-emerald-600"
             >
               <Text className="text-emerald-400 text-2xl font-inter-semibold">Comprehension Activity 🎮</Text>
