@@ -20,4 +20,6 @@ export const COMPREHENSIVE_ACTIVITY_BY_ID = (id: number) => `${BASE_URL}/compreh
 export const IDENTIFICATION_LEVEL1_TASK_BY_PATIENT_ID = (id: number) => `${BASE_URL}/api/level1/patientID/${id}`;
 
 export const DISCRIMINATION_TASK_BY_ID = (id: number) => `${BASE_URL}/discriminationQuestion/${id}`;
+export const DISCRIMINATION_ACTIVITY_BY_ID = (id: number) => `${BASE_URL}/activityDiscrimination/${id}`;
+export const DISCRIMINATION_ACTIVITY = `${BASE_URL}/activityDiscrimination/`;
 

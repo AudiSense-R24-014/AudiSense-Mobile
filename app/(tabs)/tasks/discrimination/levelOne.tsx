@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Platform, Pressable } from 'react-native';
 import * as Speech from 'expo-speech';
 import { router } from "expo-router";
 import QuestionButton from '@/components/molecules/QuestionButton';
@@ -11,6 +11,9 @@ const DiscriminationLevel1 = () => {
   const [selectedWord, setSelectedWord] = useState(null);
   const [firstWord, setFirstWord] = useState("");
   const [secondWord, setSecondWord] = useState("");
+  const [selectedAnswer, setSelectedAnswer] = useState("");
+  const [status, setStatus] = useState("");
+  
 
   useEffect(() => {
     DiscriminationTaskService.getDiscriminationTaskById("66db2163230c2790b39a8df3").then((data) => {
@@ -18,6 +21,38 @@ const DiscriminationLevel1 = () => {
       setSecondWord(data?.word2);
     });
   }, []);
+
+  const handleRhymes=(firstWord:string, secondWord:string) => {
+    let randomNumber=Math.floor(Math.random() * 2);
+    let words = randomNumber == 0 ? [firstWord,secondWord] : [secondWord,firstWord];
+    return (
+        <View className="flex-col space-y-5 mb-5">
+            {words.map((word, index) => (
+                <Pressable className="mb-3 mt-2" onPress={()=>setSelectedAnswer(word)}>
+                    <AnswerButton character={index.toString()} text={word} />
+                </Pressable>
+            ))}
+      </View>
+    )
+  }
+  const sleep = (ms:any) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const saveProgress  = async () => {
+    const feedback = {
+      word1: firstWord,
+      word2: secondWord,
+      status: status,
+      level: "1",
+      patient:"Leo",
+    };
+    DiscriminationTaskService.saveDiscriminationActvityResponse(feedback)
+      .then((data) => {
+        console.log("Rhyming Words saved Successfully: ", data);
+      })
+      .catch((err) => {
+        console.error("Error saving: ", err);
+      });
+  };
 
   //   const catSound = new Sound('cat.mp3', Sound.MAIN_BUNDLE, (error) => {
   //     if (error) {
@@ -42,11 +77,16 @@ const DiscriminationLevel1 = () => {
   //   };
 
   const [tts, setTts] = useState("");
-  const kathakarapn = () => {
-    Speech.speak("Bomuda", {
-      // voice: tts,
-      rate: 0.5
-    });
+  const checkAnswer = async () => {
+    if (selectedAnswer == firstWord) {
+      setStatus("completed");
+      console.log("Correct Answer");
+    }else{
+      setStatus("failed");
+      console.log("Incorrect Answer");
+    }
+    await sleep(3000);
+    saveProgress();
   }
   useEffect(() => {
     if (Platform.OS == "ios") {
@@ -71,25 +111,12 @@ const DiscriminationLevel1 = () => {
       </View>
 
       <Text className="text-xl font-bold mb-5 text-center self-center">{firstWord}</Text>
-      <View className="flex-col space-y-5 mb-5">
-        <View className="mb-3 mt-2">
-          <AnswerButton character="1" text={secondWord} />
-        </View>
-        <View>
-          <AnswerButton character="2" text={firstWord} />
-        </View>
-      </View>
+      {handleRhymes(firstWord, secondWord)}
       <View className="mt-20">
-        <TouchableOpacity className="bg-purple-800 p-2 rounded-lg w-3/4 mx-auto" onPress={kathakarapn}>
+        <TouchableOpacity className="bg-purple-800 p-2 rounded-lg w-3/4 mx-auto" onPress={checkAnswer}>
           <Text className="text-center text-base text-white font-bold">Check</Text>
         </TouchableOpacity>
       </View>
-      <View>
-        <TouchableOpacity onPress={() => router.push("./levelTwo")}>
-          <Text className="text-center text-base text-white font-bold">level2</Text>
-        </TouchableOpacity>
-      </View>
-
     </View>
   );
 };
