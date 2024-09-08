@@ -70,17 +70,14 @@ const DiscriminationLevel1 = () => {
         <QuestionButton text={firstWord} />
       </View>
 
-      <Text className="text-xl font-bold mb-5 text-center self-center">Cat</Text>
-
-      <View className="flex-col space-y-3 mb-5">
-        {/* <TouchableOpacity className={`bg-purple-300 p-4 rounded-lg flex-1 mr-2 ${selectedWord === 'hat' ? 'bg-gray-400' : ''}`}>
-          <Image className="mb-2 " source={require('../../../../assets/images/soundWave1.png')} />
-        </TouchableOpacity>
-        <TouchableOpacity className={`bg-purple-300 p-4 rounded-lg flex-1 mr-2 ${selectedWord === 'mat' ? 'bg-gray-400' : ''}`} onPress={() => router.push("./levelTwo")}>
-
-        </TouchableOpacity> */}
-        <AnswerButton character="1" text={secondWord} />
-        <AnswerButton character="2" text={firstWord} />
+      <Text className="text-xl font-bold mb-5 text-center self-center">{firstWord}</Text>
+      <View className="flex-col space-y-5 mb-5">
+        <View className="mb-3 mt-2">
+          <AnswerButton character="1" text={secondWord} />
+        </View>
+        <View>
+          <AnswerButton character="2" text={firstWord} />
+        </View>
       </View>
       <View className="mt-20">
         <TouchableOpacity className="bg-purple-800 p-2 rounded-lg w-3/4 mx-auto" onPress={kathakarapn}>
@@ -89,7 +86,7 @@ const DiscriminationLevel1 = () => {
       </View>
       <View>
         <TouchableOpacity onPress={() => router.push("./levelTwo")}>
-        <Text className="text-center text-base text-white font-bold">level2</Text>
+          <Text className="text-center text-base text-white font-bold">level2</Text>
         </TouchableOpacity>
       </View>
 
