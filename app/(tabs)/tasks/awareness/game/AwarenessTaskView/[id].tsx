@@ -32,6 +32,7 @@ export default function AwarenessTaskView() {
     const router = useRouter();
 
     const [sound, setSound] = useState<Audio.Sound | null>(null);
+    const [soundName, setSoundName] = useState<string | null>(null);
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
     const [playbackPosition, setPlaybackPosition] = useState<number>(0);
     const [playbackDuration, setPlaybackDuration] = useState<number>(0);
@@ -68,6 +69,8 @@ export default function AwarenessTaskView() {
     }, [sound]);
 
     async function playSound(url: string, soundName: string) {
+        // console.log(url);
+        setSoundName(soundName);
         if (sound) {
             await sound.unloadAsync();
             setSound(null);
@@ -79,6 +82,7 @@ export default function AwarenessTaskView() {
         setIsPlaying(true);
         setIsLoading(false);
         soundRef.current = newSound;
+        await newSound.setVolumeAsync(1.0);
 
         newSound.setOnPlaybackStatusUpdate(status => {
             if (status.isLoaded) {
@@ -87,9 +91,9 @@ export default function AwarenessTaskView() {
                 setIsPlaying(status.isPlaying);
             }
         });
-        await newSound.setVolumeAsync(1.0);
 
         await newSound.playAsync();
+        await newSound.unloadAsync();
         setActiveSound(soundName); // Set the clicked sound as the active sound
         setResponseShown(true); // Show the response section once
         setResponses(prevResponses => [
@@ -105,6 +109,7 @@ export default function AwarenessTaskView() {
             } else {
                 await sound.setVolumeAsync(1.0);
                 await sound.playAsync();
+                await sound.unloadAsync();
             }
             setIsPlaying(!isPlaying);
         }
@@ -259,7 +264,7 @@ export default function AwarenessTaskView() {
                     {responseShown && (
                         <View style={styles.responseContainer}>
                             <Text style={styles.responseTitle}>
-                                Did your child respond to this sound?
+                                Did your child respond to {soundName?.replace('_', ' ')} sound ?
                             </Text>
                             <View style={styles.responseButtons}>
                                 <TouchableOpacity

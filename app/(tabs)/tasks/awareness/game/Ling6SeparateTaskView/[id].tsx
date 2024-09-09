@@ -79,11 +79,11 @@ export default function Ling6SeparateTaskView() {
         if (playingIndex === index) {
             setPlayingIndex(null);
             soundRef.current?.pauseAsync(); // Pause the currently playing sound
-            console.log(`Paused sound: ${data.sounds[index].sound}`);
+            console.log(`Paused sound: ${data?.sounds[index].sound}`);
         } else {
             setPlayingIndex(index);
-            playSound(data.sounds[index].soundUrl); // Play the new sound
-            console.log(`Playing sound: ${data.sounds[index].sound}`);
+            playSound(data?.sounds[index].soundUrl ?? ''); // Play the new sound
+            console.log(`Playing sound: ${data?.sounds[index].sound}`);
         }
     };
 
@@ -92,7 +92,7 @@ export default function Ling6SeparateTaskView() {
             ...prevResponses,
             [index]: response,  // Ensure you are updating response for the correct sound
         }));
-        console.log(`Response for sound ${data.sounds[index].sound}: ${response}`);
+        console.log(`Response for sound ${data?.sounds[index].sound}: ${response}`);
     };
 
     const handleAmplificationResponse = (response: boolean) => {
