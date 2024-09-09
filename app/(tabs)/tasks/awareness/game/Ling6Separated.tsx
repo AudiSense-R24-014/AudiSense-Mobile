@@ -1,63 +1,44 @@
-import { ScrollView, Text, TouchableOpacity, SafeAreaView, Image, View } from 'react-native';
-import React from 'react';
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialIcons } from '@expo/vector-icons'; // Importing icon library
+import { LinearGradient } from 'expo-linear-gradient'; // Importing LinearGradient
 import moment from 'moment';
 
-export default function Ling6Combined() {
+import Ling6SeparateService from '@/services/AwarenessService/Ling6Separate.service';
+
+// Define the types for the data structure
+type Sound = {
+    sound: string;
+    soundUrl: string;
+};
+
+type TaskSet = {
+    _id: string;
+    sounds: Sound[];
+    voice: string;
+    rate: string;
+    pitch: string;
+    patientID: string | null;
+    createdAt: string;
+    isResponded: boolean;
+};
+
+export default function Ling6Separated() {
     const router = useRouter();
 
-    const data = [
-        {
-            id: 1,
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            breakTime: "1s",
-            soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6All/ling6_en-US-AriaNeural_combined_20240829225334.wav",
-            patientID: "1234",
-            createdAt: "2024-08-29T17:23:39.463Z",
-        }, {
-            id: 2,
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            breakTime: "1s",
-            soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6All/ling6_en-US-AriaNeural_combined_20240829225334.wav",
-            patientID: "1234",
-            createdAt: "2024-08-29T17:23:39.463Z",
-        }, {
-            id: 3,
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            breakTime: "1s",
-            soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6All/ling6_en-US-AriaNeural_combined_20240829225334.wav",
-            patientID: "1234",
-            createdAt: "2024-08-29T17:23:39.463Z",
-        }, {
-            id: 4,
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            breakTime: "1s",
-            soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6All/ling6_en-US-AriaNeural_combined_20240829225334.wav",
-            patientID: "1234",
-            createdAt: "2024-08-29T17:23:39.463Z",
-        }, {
-            id: 5,
-            voice: "en-US-AriaNeural",
-            rate: "-25%",
-            pitch: "0%",
-            breakTime: "1s",
-            soundUrl: "https://storage.googleapis.com/cdap-awareness.appspot.com/ling6All/ling6_en-US-AriaNeural_combined_20240829225334.wav",
-            patientID: "1234",
-            createdAt: "2024-08-29T17:23:39.463Z",
-        }
-    ];
+    const patientID = '66dc2b782c63571bf9060f94'
 
-    const gradientColors = [
+    const [data, setData] = useState<TaskSet[]>([]);
+
+    useEffect(() => {
+        Ling6SeparateService.getLing6SeparateTasksByPatientId(patientID)
+            .then((response) => {
+                setData(response);
+            });
+    }, []);
+
+    const gradientColors: string[][] = [
         ['#927AFF', '#ADA1E2'],
         ['#FF6347', '#FF4500'],
         ['#3CB371', '#2E8B57'],
@@ -72,46 +53,46 @@ export default function Ling6Combined() {
         require('../../../../../assets/images/balls.webp'),
     ];
 
-    const getUniqueRandomGradient = (previousGradient) => {
+    const getUniqueRandomGradient = (previousGradient: string[] | null): string[] => {
         const availableGradients = gradientColors.filter(gradient => gradient !== previousGradient);
         const randomIndex = Math.floor(Math.random() * availableGradients.length);
         return availableGradients[randomIndex];
     };
 
-    const getRandomImage = () => {
+    const getRandomImage = (): any => {
         const randomIndex = Math.floor(Math.random() * images.length);
         return images[randomIndex];
     };
 
-    const handleTaskPress = (taskId) => {
+    const handleTaskPress = (taskId: string) => {
         // Navigate to the detail page for the specific task
-        router.push(`/tasks/awareness/game/Ling6AllTaskView/${taskId}`);
+        router.push(`/tasks/awareness/game/Ling6SeparateTaskView/${taskId}`);
     };
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             <LinearGradient
-                colors={['#8FBC8F', '#3CB371']} // Change gradient colors as needed
+                colors={['#00BFFF', '#1E90FF']} // Change gradient colors as needed
                 style={{ padding: 16, flexDirection: 'row', alignItems: 'center' }}
             >
                 <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 16 }}>
                     <MaterialIcons name="arrow-back" size={24} color="white" />
                 </TouchableOpacity>
                 <Text style={{ fontSize: 24, fontWeight: 'bold', color: 'white', flex: 1, textAlign: 'center' }}>
-                    Ling 6 - Combined Tasks
+                    Ling 6 - Separated Tasks
                 </Text>
             </LinearGradient>
 
             <ScrollView style={{ flex: 1, padding: 16 }}>
-                {data.reduce((acc, item, index) => {
-                    const previousGradient = acc[index - 1]?.gradient || null;
+                {data.reduce<JSX.Element[]>((acc, item, index) => {
+                    const previousGradient = acc[index - 1]?.props.children.props.style?.colors || null;
                     const currentGradient = getUniqueRandomGradient(previousGradient);
                     const randomImage = getRandomImage();
 
                     acc.push(
                         <TouchableOpacity
-                            key={item.id}
-                            onPress={() => handleTaskPress(item.id)}
+                            key={item._id}
+                            onPress={() => handleTaskPress(item._id)}
                             style={{ marginBottom: 16 }}
                         >
                             <LinearGradient
@@ -129,7 +110,7 @@ export default function Ling6Combined() {
 
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'white', flex: 1 }}>
-                                        Incomplete
+                                        {item.isResponded ? 'Completed' : 'Not Completed'}
                                     </Text>
                                     <Image
                                         source={randomImage}
@@ -139,7 +120,7 @@ export default function Ling6Combined() {
                             </LinearGradient>
                         </TouchableOpacity>
                     );
-                    acc[index].gradient = currentGradient;
+
                     return acc;
                 }, [])}
             </ScrollView>

@@ -10,7 +10,7 @@ const MCQModel = ({
   answerB,
   answerC,
   answerD,
-  correctAnswer,
+  persist,
   lockAnswer,
   onNext,
   onBack,
@@ -27,6 +27,7 @@ const MCQModel = ({
   lockAnswer: (answer: string) => void; // Function to lock the selected answer
   onNext: () => void; // Function to go to the next question
   onBack: () => void; // Function to go to the previous question
+  persist: () => void;
   currentQuestionIndex: number; // Current question index
   totalQuestions: number; // Total number of questions
   lockedAnswer: string; // The locked answer
@@ -103,7 +104,7 @@ const MCQModel = ({
           </View>
         ) : (
           <View className="flex-1 justify-center w-1/2 m-4">
-            <Pressable onPress={onNext}>
+            <Pressable onPress={persist}>
               <CustomButton text="Finish" buttonType="primary" />
             </Pressable>
           </View>

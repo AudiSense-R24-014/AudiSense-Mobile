@@ -12,6 +12,7 @@ const SpeechAssessModel = ({
   totalQuestions,
   lockRecording,
   recordedAudio,
+  submit,
 }: {
   question: string;
   lockRecording: (answer: any) => void; // Function to lock the selected answer
@@ -20,6 +21,7 @@ const SpeechAssessModel = ({
   currentQuestionIndex: number; // Current question index
   totalQuestions: number; // Total number of questions
   recordedAudio: any;
+  submit: () => void;
 }) => {
 
   return (
@@ -29,9 +31,12 @@ const SpeechAssessModel = ({
       </Text>
       <QuestionButton text={question} />
       <View className="flex-row justify-center mt-2">
-          <SpeechInput  lockRecording={lockRecording} recordedAudio={recordedAudio}/>
+        <SpeechInput
+          lockRecording={lockRecording}
+          recordedAudio={recordedAudio}
+        />
       </View>
-      <View className="flex-row justify-center m-4 mt-4 mx-10">
+      <View className="flex-row justify-center mt-4 mx-10">
         {currentQuestionIndex != 0 && (
           <View className="flex-1 justify-center w-1/2 m-4">
             <Pressable onPress={onBack}>
@@ -47,7 +52,7 @@ const SpeechAssessModel = ({
           </View>
         ) : (
           <View className="flex-1 justify-center w-1/2 m-4">
-            <Pressable onPress={onNext}>
+            <Pressable onPress={submit}>
               <CustomButton text="Finish" buttonType="primary" />
             </Pressable>
           </View>
