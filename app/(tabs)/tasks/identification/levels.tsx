@@ -48,10 +48,6 @@ const Levels = () => {
               <Text className="text-2xl font-bold mt-2 text-gray-800">2</Text>
             </TouchableOpacity>
 
-            {/* Locked Level */}
-            <View className="bg-gray-200 rounded-lg p-4 items-center">
-              <Text className="text-2xl font-bold mt-2 text-gray-800">🔒</Text>
-            </View>
           </View>
         </View>
       </ImageBackground>
