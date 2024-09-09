@@ -54,7 +54,7 @@ const TaskOnboarding = () => {
           </Pressable>
 
           <Pressable
-            onPress={() => router.push("/tasks/identification/levels")}
+            onPress={() => router.push("/tasks/discrimination/levels")}
             className="mb-1"
           >
             <LinearGradient

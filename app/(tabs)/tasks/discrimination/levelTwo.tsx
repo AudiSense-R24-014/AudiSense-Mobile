@@ -90,7 +90,7 @@ const DiscriminationLevel2 = () => {
                 if (recording?.file) {
                     const response = await fetch(recording.file); // Get the file from the URI
                     const blob = await response.blob(); // Convert the file to a Blob
-                    const storageRef = ref(storage, `recordings/${Date.now()}_${i}.mp3`);
+                    const storageRef = ref(storage, `recordingsDis/${Date.now()}_${i}.mp3`);
                     // Upload the blob to Firebase Storage
                     await uploadBytes(storageRef, blob);
                     const downloadURL = await getDownloadURL(storageRef);

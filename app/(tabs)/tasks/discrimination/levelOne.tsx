@@ -13,7 +13,7 @@ const DiscriminationLevel1 = () => {
   const [secondWord, setSecondWord] = useState("");
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [status, setStatus] = useState("");
-  
+
 
   useEffect(() => {
     DiscriminationTaskService.getDiscriminationTaskById("66db2163230c2790b39a8df3").then((data) => {
@@ -22,28 +22,28 @@ const DiscriminationLevel1 = () => {
     });
   }, []);
 
-  const handleRhymes=(firstWord:string, secondWord:string) => {
-    let randomNumber=Math.floor(Math.random() * 2);
-    let words = randomNumber == 0 ? [firstWord,secondWord] : [secondWord,firstWord];
+  const handleRhymes = (firstWord: string, secondWord: string) => {
+    let randomNumber = Math.floor(Math.random() * 2);
+    let words = randomNumber == 0 ? [firstWord, secondWord] : [secondWord, firstWord];
     return (
-        <View className="flex-col space-y-5 mb-5">
-            {words.map((word, index) => (
-                <Pressable className="mb-3 mt-2" onPress={()=>setSelectedAnswer(word)}>
-                    <AnswerButton character={index.toString()} text={word} />
-                </Pressable>
-            ))}
+      <View className="flex-col space-y-5 mb-5">
+        {words.map((word, index) => (
+          <Pressable className="mb-3 mt-2" onPress={() => setSelectedAnswer(word)}>
+            <AnswerButton character={index.toString()} text={word} />
+          </Pressable>
+        ))}
       </View>
     )
   }
-  const sleep = (ms:any) => new Promise((resolve) => setTimeout(resolve, ms));
+  const sleep = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  const saveProgress  = async () => {
+  const saveProgress = async () => {
     const feedback = {
       word1: firstWord,
       word2: secondWord,
       status: status,
       level: "1",
-      patient:"Leo",
+      patient: "Leo",
     };
     DiscriminationTaskService.saveDiscriminationActvityResponse(feedback)
       .then((data) => {
@@ -81,7 +81,7 @@ const DiscriminationLevel1 = () => {
     if (selectedAnswer == firstWord) {
       setStatus("completed");
       console.log("Correct Answer");
-    }else{
+    } else {
       setStatus("failed");
       console.log("Incorrect Answer");
     }
@@ -113,10 +113,17 @@ const DiscriminationLevel1 = () => {
       <Text className="text-xl font-bold mb-5 text-center self-center">{firstWord}</Text>
       {handleRhymes(firstWord, secondWord)}
       <View className="mt-20">
-        <TouchableOpacity className="bg-purple-800 p-2 rounded-lg w-3/4 mx-auto" onPress={checkAnswer}>
-          <Text className="text-center text-base text-white font-bold">Check</Text>
-        </TouchableOpacity>
       </View>
+      <TouchableOpacity
+        className={`bg-purple-800 p-2 rounded-lg w-3/4 mx-auto border ${status === "completed"
+          ? "border-lime-500"
+          : status === "failed"
+            ? "border-red-400"
+            : "border-transparent"}`}
+        onPress={checkAnswer}
+      >
+        <Text className="text-center text-base text-white font-bold">Check</Text>
+      </TouchableOpacity>
     </View>
   );
 };
