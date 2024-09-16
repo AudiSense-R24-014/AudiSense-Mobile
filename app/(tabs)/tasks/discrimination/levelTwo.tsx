@@ -1,21 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, Button } from 'react-native';
-import { Audio } from 'expo-av';
 import DiscriminationTaskService from '@/services/DiscriminationTask.service';
-import QuestionButton from '@/components/molecules/QuestionButton';
 import AnswerButton from '@/components/molecules/AnswerButton';
 import SpeechInput from '@/components/molecules/SpeechInput';
 import { storage, ref, uploadBytes, getDownloadURL } from "@/firebaseConfig";
 
 const DiscriminationLevel2 = () => {
-    const [isPlayingFour, setIsPlayingFour] = useState(false);
-    const [isPlayingRoar, setIsPlayingRoar] = useState(false);
-    const [recordingAudio, setRecordingAudio] = useState<any>();
-    const [recordings, setRecordings] = useState<{ sound: any; duration: string; file: any; }[]>([]);
-
     const [firstWord, setFirstWord] = useState("");
     const [secondWord, setSecondWord] = useState("");
-    const [status, setStatus] = useState("");
+    const [lockedRecordings, setLockedRecordings] = useState<any[]>([]);
+    
 
     useEffect(() => {
         DiscriminationTaskService.getDiscriminationTaskById("66db2163230c2790b39a8df3").then((data) => {
@@ -24,60 +18,21 @@ const DiscriminationLevel2 = () => {
         });
     }, []);
 
-    async function startRecording() {
-        try {
-            const perm = await Audio.requestPermissionsAsync();
-            if (perm.status === "granted") {
-                await Audio.setAudioModeAsync({
-                    allowsRecordingIOS: true,
-                    playsInSilentModeIOS: true
-                });
-                const { recording } = await Audio.Recording.createAsync();
-                setRecordingAudio(recording);
-            }
-        } catch (err) {
-            console.error("Failed to start recording", err);
-        }
-    }
 
-    async function stopRecording() {
-        setRecordingAudio(undefined);
-        await recordingAudio.stopAndUnloadAsync();
-        let allRecordings = [...recordings];
-        const { sound, status } = await recordingAudio.createNewLoadedSoundAsync();
-        allRecordings.push({
-            sound: sound,
-            duration: getDurationFormatted(status.durationMillis),
-            file: recordingAudio.getURI()
+    const updateLockedRecording = (index: number, newValue: any) => {
+        setLockedRecordings((prevLockedRecordings) => {
+          const updatedRecordings = [...prevLockedRecordings];
+          updatedRecordings[index] = newValue;
+          return updatedRecordings;
         });
-        setRecordings(allRecordings);
-    }
+      };
+      
 
-    function getDurationFormatted(milliseconds: any) {
-        const minutes = milliseconds / 1000 / 60;
-        const seconds = Math.round((minutes - Math.floor(minutes)) * 60);
-        return seconds < 10 ? `${Math.floor(minutes)}:0${seconds}` : `${Math.floor(minutes)}:${seconds}`;
-    }
-
-    function getRecordingLines() {
-        return recordings.map((recordingLine, index) => (
-            <View key={index} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginLeft: 10, marginRight: 40 }}>
-                <Text style={{ flex: 1, margin: 15 }}>
-                    Recording #{index + 1} | {recordingLine.duration}
-                </Text>
-                <Button onPress={() => recordingLine.sound.replayAsync()} title="Play" />
-            </View>
-        ));
-    }
-
-    function clearRecordings() {
-        setRecordings([]);
-    }
     const capitalizeFirstLetter = (word: string) => {
         return word.charAt(0).toUpperCase() + word.slice(1);
     };
 
-    const [lockedRecordings, setLockedRecordings] = useState<any[]>([]);
+    
 
     const submit = async () => {
         try {
@@ -97,20 +52,20 @@ const DiscriminationLevel2 = () => {
                     urls[i] = downloadURL;
                 }
             }
-            saveProgress();
+            saveProgress(urls);
             console.log("Uploaded recording URLs:", urls);
         } catch (error) {
             console.error("Error uploading recordings:", error);
         }
     };
 
-    const saveProgress = async () => {
+    const saveProgress = async (urls:any[]) => {
         const feedback = {
             word1: firstWord,
             word2: secondWord,
             status: "completed",
             level: "2",
-            providedAnswers: lockedRecordings,
+            providedAnswers: urls,
             patient: "Leo",
         };
         DiscriminationTaskService.saveDiscriminationActvityResponse(feedback)
@@ -147,17 +102,17 @@ const DiscriminationLevel2 = () => {
                 <View className="flex-1 mr-2">
                     <SpeechInput
                         lockRecording={function (recording: any): void {
-                            throw new Error('Function not implemented.');
+                            updateLockedRecording(0, recording);
                         }}
-                        recordedAudio={undefined}
+                        recordedAudio={lockedRecordings[0]?lockedRecordings[0]:undefined} 
                     />
                 </View>
                 <View className="flex-1">
                     <SpeechInput
                         lockRecording={function (recording: any): void {
-                            throw new Error('Function not implemented.');
+                            updateLockedRecording(1, recording);
                         }}
-                        recordedAudio={undefined}
+                        recordedAudio={lockedRecordings[1]?lockedRecordings[1]:undefined}
                     />
                 </View>
             </View>
