@@ -7,8 +7,6 @@ import AnswerButton from '@/components/molecules/AnswerButton';
 import DiscriminationTaskService from '@/services/DiscriminationTask.service';
 
 const DiscriminationLevel1 = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedWord, setSelectedWord] = useState(null);
   const [firstWord, setFirstWord] = useState("");
   const [secondWord, setSecondWord] = useState("");
   const [selectedAnswer, setSelectedAnswer] = useState("");
@@ -28,16 +26,16 @@ const DiscriminationLevel1 = () => {
     return (
       <View className="flex-col space-y-5 mb-5">
         {words.map((word, index) => (
-          <Pressable className="mb-3 mt-2" onPress={() => setSelectedAnswer(word)}>
-            <AnswerButton character={index.toString()} text={word} />
+          <Pressable className="mb-3 mt-2">
+            <AnswerButton character={index.toString()} text={word} storeAnswer={()=>setSelectedAnswer(word)}/>
           </Pressable>
         ))}
       </View>
     )
   }
-  const sleep = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
+  
 
-  const saveProgress = async () => {
+  const saveProgress = async (status:string) => {
     const feedback = {
       word1: firstWord,
       word2: secondWord,
@@ -54,39 +52,18 @@ const DiscriminationLevel1 = () => {
       });
   };
 
-  //   const catSound = new Sound('cat.mp3', Sound.MAIN_BUNDLE, (error) => {
-  //     if (error) {
-  //       console.log('failed to load the sound', error);
-  //     }
-  //   });
-
-  //   const handlePlaySound = () => {
-  //     setIsPlaying(true);
-  //     catSound.play((success) => {
-  //       if (success) {
-  //         console.log('successfully finished playing');
-  //       } else {
-  //         console.log('playback failed due to audio decoding errors');
-  //       }
-  //       setIsPlaying(false);
-  //     });
-  //   };
-
-  //   const handleWordSelection = (word) => {
-  //     setSelectedWord(word);
-  //   };
-
+  
   const [tts, setTts] = useState("");
   const checkAnswer = async () => {
     if (selectedAnswer == firstWord) {
+      saveProgress("completed");
       setStatus("completed");
       console.log("Correct Answer");
     } else {
+      saveProgress("failed");
       setStatus("failed");
       console.log("Incorrect Answer");
     }
-    await sleep(3000);
-    saveProgress();
   }
   useEffect(() => {
     if (Platform.OS == "ios") {
@@ -101,11 +78,6 @@ const DiscriminationLevel1 = () => {
     <View className="flex-1 bg-gray-100 p-5">
       <Text className="text-2xl font-bold mb-2 text-violet-800">Discrimination - Level 1</Text>
       <Text className="text-base mb-5">Hear, and Select the Correct Rhyming Words</Text>
-
-      {/* <TouchableOpacity className={`flex-row items-center bg-gray-200 p-3 rounded-lg mb-4 ${isPlaying ? 'opacity-50' : ''}`} disabled={isPlaying}>
-                <Image className="w-6 h-6 mr-2" />
-                <Text className="text-sm">0:15</Text>
-            </TouchableOpacity> */}
       <View>
         <QuestionButton text={firstWord} />
       </View>
