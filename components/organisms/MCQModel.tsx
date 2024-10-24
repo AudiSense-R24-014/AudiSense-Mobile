@@ -23,7 +23,6 @@ const MCQModel = ({
   answerB: string;
   answerC: string;
   answerD: string;
-  correctAnswer: string;
   lockAnswer: (answer: string) => void; // Function to lock the selected answer
   onNext: () => void; // Function to go to the next question
   onBack: () => void; // Function to go to the previous question
