@@ -1,4 +1,4 @@
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,137 +13,82 @@ interface Sound {
     url: string;
 }
 
-// Define the type for each item in the data array
 interface DataItem {
     _id: string;
     sounds: Sound[];
     createdAt: string;
 }
 
-interface Response {
-    name: string;
-    url: string;
-    responded: boolean;
-    result: boolean | null;
-}
-
 export default function AwarenessTaskView() {
     const { id } = useLocalSearchParams();
     const router = useRouter();
 
-    const [sound, setSound] = useState<Audio.Sound | null>(null);
-    const [soundName, setSoundName] = useState<string | null>(null);
+    const [sounds, setSounds] = useState<Audio.Sound[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
-    const [playbackPosition, setPlaybackPosition] = useState<number>(0);
-    const [playbackDuration, setPlaybackDuration] = useState<number>(0);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [responses, setResponses] = useState<Response[]>([]); // Array to store responses
-    const [responseShown, setResponseShown] = useState<boolean>(false); // Flag to control showing responses
-    const [activeSound, setActiveSound] = useState<string | null>(null); // Track the currently clicked sound
-    const [amplificationResponse, setAmplificationResponse] = useState<boolean | null>(null); // Track the response for the additional question
-
-    const soundRef = useRef<Audio.Sound | null>(null);
-
-    const [data, setData] = useState<DataItem | null>(null);
+    const [playbackComplete, setPlaybackComplete] = useState<boolean>(false);
+    const [amplificationResponse, setAmplificationResponse] = useState<boolean | null>(null);
 
     useEffect(() => {
-        AwarenessSoundTaskService.getAwarenessSoundTaskByID(id)
-            .then((response) => {
-                setData(response);
+        async function loadSounds() {
+            setIsLoading(true);
+            const response = await AwarenessSoundTaskService.getAwarenessSoundTaskByID(id);
+
+            const loadedSounds: Audio.Sound[] = [];
+            // Preload all sounds
+            for (const soundItem of response.sounds.slice(0, 3)) {
+                const { sound } = await Audio.Sound.createAsync({ uri: soundItem.url });
+                loadedSounds.push(sound);
+            }
+            setSounds(loadedSounds);
+            setIsLoading(false);
+        }
+
+        loadSounds();
+
+        return () => {
+            // Unload sounds when component unmounts
+            sounds.forEach(sound => {
+                if (sound) {
+                    sound.unloadAsync();
+                }
             });
+        };
     }, []);
 
-    useEffect(() => {
-        if (sound) {
-            const updatePlaybackStatus = async () => {
-                const status = await sound.getStatusAsync();
-                if (status.isLoaded) {
-                    setPlaybackPosition(status.positionMillis ?? 0);
-                    setPlaybackDuration(status.durationMillis ?? 0);
-                }
-            };
-
-            const interval = setInterval(updatePlaybackStatus, 1000);
-            return () => clearInterval(interval);
-        }
-    }, [sound]);
-
-    async function playSound(url: string, soundName: string) {
-        // console.log(url);
-        setSoundName(soundName);
-        if (sound) {
-            await sound.unloadAsync();
-            setSound(null);
-        }
-
-        setIsLoading(true);
-        const { sound: newSound, status } = await Audio.Sound.createAsync({ uri: url });
-        setSound(newSound);
+    const playSoundsInSequence = async () => {
         setIsPlaying(true);
-        setIsLoading(false);
-        soundRef.current = newSound;
-        await newSound.setVolumeAsync(1.0);
 
-        newSound.setOnPlaybackStatusUpdate(status => {
-            if (status.isLoaded) {
-                setPlaybackPosition(status.positionMillis ?? 0);
-                setPlaybackDuration(status.durationMillis ?? 0);
-                setIsPlaying(status.isPlaying);
+        for (let i = 0; i < sounds.length; i++) {
+            if (sounds[i]) {
+                // 5 seconds break before each sound
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                await sounds[i].playAsync();
+                await new Promise((resolve) => {
+                    sounds[i].setOnPlaybackStatusUpdate((status) => {
+                        if (status.didJustFinish) {
+                            resolve(true); // Resolve when the sound finishes
+                        }
+                    });
+                });
             }
-        });
-
-        await newSound.playAsync();
-        await newSound.unloadAsync();
-        setActiveSound(soundName); // Set the clicked sound as the active sound
-        setResponseShown(true); // Show the response section once
-        setResponses(prevResponses => [
-            ...prevResponses.filter(response => response.name !== soundName), // Remove old entries with the same name
-            { name: soundName, url: url, responded: false, result: null }
-        ]);
-    }
-
-    async function togglePlayPause() {
-        if (sound) {
-            if (isPlaying) {
-                await sound.pauseAsync();
-            } else {
-                await sound.setVolumeAsync(1.0);
-                await sound.playAsync();
-                await sound.unloadAsync();
-            }
-            setIsPlaying(!isPlaying);
         }
-    }
 
-    function handleButtonPress(soundName: string, result: boolean) {
-        setResponses(prevResponses => prevResponses.map(response =>
-            response.name === soundName
-                ? { ...response, responded: true, result: result } // Mark as responded and set result
-                : response
-        ));
-    }
+        // Final 5-second break after all sounds
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        setIsPlaying(false);
+        setPlaybackComplete(true);
+    };
 
-    function allResponsesDone() {
-        // Check if all responses are done
-        return responses.length === data?.sounds.length && responses.every(response => response.responded);
-    }
+    const handleAmplificationResponse = (response: boolean) => {
+        setAmplificationResponse(response);
+        console.log(`Amplification device response: ${response}`);
+    };
 
-    function handleSubmit() {
-
-        const finalizedResponses = responses.map(response => {
-            return {
-                name: response.name,
-                response: response.result,
-            };
-        });
-
-        // Handle the submit action here
+    const handleSubmit = () => {
         const collectedResponses = {
-            responses: finalizedResponses,
             isImplantOn: amplificationResponse,
         };
-        // Handle submission logic here
-        // console.log("Collected responses:", collectedResponses);
 
         AwarenessSoundTaskService.collectResponse(id, collectedResponses)
             .then(() => {
@@ -154,12 +99,6 @@ export default function AwarenessTaskView() {
                 Alert.alert("Failed to submit responses. Please try again later.");
                 console.error("Failed to submit responses", error);
             });
-
-    }
-
-    const handleAmplificationResponse = (response: boolean) => {
-        setAmplificationResponse(response);
-        console.log(`Amplification device response: ${response}`);
     };
 
     return (
@@ -168,18 +107,15 @@ export default function AwarenessTaskView() {
                 colors={['#f2f2f2', '#e6e6e6']}
                 style={{ padding: 16, flexDirection: 'row', alignItems: 'center' }}
             >
-                <TouchableOpacity
-                    onPress={() => router.back()}
-                    style={{ marginRight: 16 }}
-                >
+                <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 16 }}>
                     <MaterialIcons name="arrow-back" size={24} color="#6C26A6" />
                 </TouchableOpacity>
                 <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#6C26A6', flex: 1, textAlign: 'center' }}>
                     Awareness - Level 1 Task
                 </Text>
             </LinearGradient>
-            <View style={{ padding: 16 }}>
 
+            <View style={{ padding: 16 }}>
                 {/* Additional Question */}
                 <LinearGradient
                     colors={['#9b7dc8', '#e8ace1']}
@@ -190,7 +126,7 @@ export default function AwarenessTaskView() {
                         borderRadius: 12,
                         borderWidth: 2,
                         borderColor: '#FFFFFF',
-                        marginBottom: 16, // Add some margin at the bottom
+                        marginBottom: 16,
                     }}
                 >
                     <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -227,112 +163,56 @@ export default function AwarenessTaskView() {
                     </View>
                 </LinearGradient>
 
-                <View style={{ marginTop: 24 }}>
-                    {data?.sounds.map((soundItem) => (
-                        <View key={soundItem.name}>
-                            <TouchableOpacity
-                                onPress={() => playSound(soundItem.url, soundItem.name)}
-                                style={{
-                                    marginBottom: 16,
-                                    padding: 12,
-                                    backgroundColor: '#6C26A6',
-                                    borderRadius: 10,
-                                }}
-                            >
-                                <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: 16 }}>
-                                    Play {soundItem.name.replace('_', ' ')}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    ))}
+                {isLoading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color="#6C26A6" />
+                        <Text style={{ marginTop: 16, fontSize: 16 }}>Loading sounds...</Text>
+                    </View>
+                ) : (
                     <View style={{ alignItems: 'center', marginTop: 16 }}>
                         <TouchableOpacity
-                            onPress={togglePlayPause}
-                            style={styles.playPauseButton}
+                            onPress={playSoundsInSequence}
+                            disabled={isPlaying}
+                            style={styles.playButton}
                         >
-                            <MaterialIcons
-                                name={isPlaying ? "pause" : "play-arrow"}
-                                size={36}
-                                color="#6C26A6"
-                            />
-                        </TouchableOpacity>
-                        <Text style={{ textAlign: 'center', marginTop: 8 }}>
-                            {Math.floor(playbackPosition / 1000)} / {Math.floor(playbackDuration / 1000)} sec
-                        </Text>
-                    </View>
-
-                    {responseShown && (
-                        <View style={styles.responseContainer}>
-                            <Text style={styles.responseTitle}>
-                                Did your child respond to {soundName?.replace('_', ' ')} sound ?
+                            <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: 16 }}>
+                                {isPlaying ? "Playing..." : "Play Sounds"}
                             </Text>
-                            <View style={styles.responseButtons}>
-                                <TouchableOpacity
-                                    style={[styles.responseButton, { backgroundColor: "#4CAF50" }]}
-                                    onPress={() => handleButtonPress(activeSound!, true)}
-                                >
-                                    <Text style={styles.responseButtonText}>Yes</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.responseButton, { backgroundColor: "#F44336" }]}
-                                    onPress={() => handleButtonPress(activeSound!, false)}
-                                >
-                                    <Text style={styles.responseButtonText}>No</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    )}
-
-                    {allResponsesDone() && (
-                        <TouchableOpacity
-                            onPress={handleSubmit}
-                            style={{
-                                marginTop: 16,
-                                paddingVertical: 12,
-                                paddingHorizontal: 24,
-                                backgroundColor: '#FF6347',
-                                borderRadius: 8,
-                                alignItems: 'center',
-                            }}
-                        >
-                            <Text style={{ color: '#FFF', fontWeight: 'bold' }}>Submit Responses</Text>
                         </TouchableOpacity>
-                    )}
-                </View>
+                    </View>
+                )}
+
+                {playbackComplete && (
+                    <TouchableOpacity
+                        onPress={handleSubmit}
+                        style={{
+                            marginTop: 16,
+                            paddingVertical: 12,
+                            paddingHorizontal: 24,
+                            backgroundColor: '#FF6347',
+                            borderRadius: 8,
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Text style={{ color: '#FFF', fontWeight: 'bold' }}>Submit Responses</Text>
+                    </TouchableOpacity>
+                )}
             </View>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    playPauseButton: {
-        backgroundColor: '#FFF',
-        borderRadius: 50,
-        padding: 16,
-        elevation: 5,
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    responseContainer: {
-        marginTop: 24,
-    },
-    responseTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#432559',
-        marginBottom: 12,
-        textAlign: 'center',
-    },
-    responseButtons: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-    },
-    responseButton: {
+    playButton: {
+        backgroundColor: '#6C26A6',
+        borderRadius: 10,
         paddingVertical: 12,
         paddingHorizontal: 24,
-        borderRadius: 8,
-    },
-    responseButtonText: {
-        color: '#FFF',
-        fontWeight: 'bold',
-        fontSize: 16,
+        elevation: 5,
     },
 });
