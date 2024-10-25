@@ -11,6 +11,28 @@ const getComprehensiveTaskById = async (id: any) => {
   return data;
 };
 
+const getAssignedActivitiesByPatientId = async (id: any) => {
+  const response = await fetch(URL.COMPREHENSIVE_ASSIGNED_ACTIVITIES_BY_PATIENT_ID(id), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+  return data;
+};
+
+const getActivitiesByPatientId = async (id: any) => {
+  const response = await fetch(URL.COMPREHENSIVE_ACTIVITY_BY_PATIENT_ID(id), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+  return data;
+};
+
 const getActivityById = async (id: any) => {
   const response = await fetch(URL.COMPREHENSIVE_ACTIVITY_BY_ID(id), {
     method: "GET",
@@ -37,5 +59,7 @@ const updateActivityById = async (id: any, body: any) => {
 export default{
     getComprehensiveTaskById,
     getActivityById,
-    updateActivityById
+    updateActivityById,
+    getAssignedActivitiesByPatientId,
+    getActivitiesByPatientId
 }

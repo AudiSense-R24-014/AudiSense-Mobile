@@ -1,7 +1,7 @@
 import * as ENV from '../dotenv.config';
 
-const BASE_URL = `http://${ENV.LOCAL_IP}:3000`;
-// const BASE_URL = `https://apigateway-pv2f.onrender.com`;
+// const BASE_URL = `http://${ENV.LOCAL_IP}:3000`;
+const BASE_URL = `https://apigateway-pv2f.onrender.com`;
 
 export const PATIENT_LOGIN = `${BASE_URL}/patients/login`;
 
@@ -19,6 +19,8 @@ export const LING6_SEPARATE_COLLECT_RESPONSE = (id: string) => `${BASE_URL}/ling
 
 export const COMPREHENSIVE_TASK_BY_ID = (id: number) => `${BASE_URL}/comprehension-task/${id}`;
 export const COMPREHENSIVE_ACTIVITY_BY_ID = (id: number) => `${BASE_URL}/comprehension-activity/${id}`;
+export const COMPREHENSIVE_ACTIVITY_BY_PATIENT_ID = (id: number) => `${BASE_URL}/comprehension-activity/patient/${id}`;
+export const COMPREHENSIVE_ASSIGNED_ACTIVITIES_BY_PATIENT_ID = (id: number) => `${BASE_URL}/comprehension-activity/patient/${id}/assigned`;
 
 export const IDENTIFICATION_LEVEL1_TASK_BY_PATIENT_ID = (id: number) => `${BASE_URL}/api/level1/patientID/${id}`;
 export const IDENTIFICATION_LEVEL2_TASK_BY_PATIENT_ID = (id:number) => `${BASE_URL}/identification-level2/patientID/${id}`;
