@@ -1,6 +1,6 @@
 import ComprehensionHeader from "@/components/organisms/ComprehensionHeader";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,8 +9,27 @@ import {
   ImageBackground,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // For back button icon
+import DiscriminationTaskService from "@/services/DiscriminationTask.service";
 
 const Levels = () => {
+  const [userId, setUserId] = useState(null);
+    // const [allActivities, setAllActivities] = useState<Activity[]>([]);
+
+    useEffect(() => {
+      if (userId) {
+        DiscriminationTaskService.getDiscriminationActivityByPatientId(userId)
+              .then((data) => {
+                  // setAllActivities(data);
+              })
+              .catch((error) => {
+                  console.error(
+                      "Error fetching comprehension activities:",
+                      error
+                  );
+              });
+      }
+  }, [userId]);
+  
   return (
     <View className="flex-1 bg-white">
       <ImageBackground
@@ -28,7 +47,7 @@ const Levels = () => {
 
             {/* Title */}
             <Text className="text-amber-500 text-3xl font-sevillana">
-              Comprehension Tasks
+              Discrimination Tasks
             </Text>
             <View className="px-2"/>
           </View>

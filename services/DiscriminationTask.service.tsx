@@ -35,7 +35,20 @@ const saveDiscriminationActvityResponse = async (req : any) => {
   const data = await response.json();
   return data;
 }
+
+const getDiscriminationActivityByPatientId = async (id : any) => {
+  const response = await fetch(URL.DISCRIMINATION_ACTIVITY_BY_PATIENT_ID(id), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+  return data;
+}
+
 export default{
     getDiscriminationTaskById,
     saveDiscriminationActvityResponse,
+    getDiscriminationActivityByPatientId,
 }

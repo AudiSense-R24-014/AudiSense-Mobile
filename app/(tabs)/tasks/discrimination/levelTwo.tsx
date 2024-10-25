@@ -87,15 +87,15 @@ const DiscriminationLevel2 = () => {
             <View className="flex-row justify-around w-full mb-20">
                 <View className="items-center w-2/5">
                     <View>
-                        <AnswerButton text={firstWord} character={''} />
+                        <AnswerButton text={"Hello"} character={''} />
                     </View>
-                    <Text className="text-lg font-bold text-purple-700 mt-2">{capitalizeFirstLetter(firstWord)}</Text>
+                    <Text className="text-lg font-bold text-purple-700 mt-2">{capitalizeFirstLetter("Hello")}</Text>
                 </View>
                 <View className="items-center w-2/5">
                     <View>
-                        <AnswerButton text={secondWord} character={''} />
+                        <AnswerButton text={"Mellow"} character={''} />
                     </View>
-                    <Text className="text-lg font-bold text-purple-700 mt-2">{capitalizeFirstLetter(secondWord)}</Text>
+                    <Text className="text-lg font-bold text-purple-700 mt-2">{capitalizeFirstLetter("Mellow")}</Text>
                 </View>
             </View>
             <View className="flex-row justify-between">

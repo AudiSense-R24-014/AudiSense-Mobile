@@ -79,11 +79,11 @@ const DiscriminationLevel1 = () => {
       <Text className="text-2xl font-bold mb-2 text-violet-800">Discrimination - Level 1</Text>
       <Text className="text-base mb-5">Hear, and Select the Correct Rhyming Words</Text>
       <View>
-        <QuestionButton text={firstWord} />
+        <QuestionButton text={"bunny"} />
       </View>
 
-      <Text className="text-xl font-bold mb-5 text-center self-center">{firstWord}</Text>
-      {handleRhymes(firstWord, secondWord)}
+      <Text className="text-xl font-bold mb-5 text-center self-center">{"Bunny"}</Text>
+      {handleRhymes("honey", "bunny")}
       <View className="mt-20">
       </View>
       <TouchableOpacity

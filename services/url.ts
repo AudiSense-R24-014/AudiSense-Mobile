@@ -28,6 +28,7 @@ export const UPDATE_ANSWER_LEVEL1 = (id:string) => `${BASE_URL}/identification-l
 export const UPDATE_ANSWER_LEVEL2 = (id:string) => `${BASE_URL}/identification-level2/updateLevel2ItemByTaskID/${id}`;
 
 export const DISCRIMINATION_TASK_BY_ID = (id: number) => `${BASE_URL}/discriminationQuestion/${id}`;
+
 export const DISCRIMINATION_ACTIVITY_BY_ID = (id: number) => `${BASE_URL}/activityDiscrimination/${id}`;
 export const DISCRIMINATION_ACTIVITY = `${BASE_URL}/activityDiscrimination/`;
-
+export const DISCRIMINATION_ACTIVITY_BY_PATIENT_ID = (id: number) => `${BASE_URL}/activityDiscrimination/patient/${id}`;
