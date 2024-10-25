@@ -2,11 +2,19 @@ import { Text, TouchableOpacity, View, ScrollView, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import React , { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+interface Patient {
+    dob: any;
+    hearingAge: any;
+    firstName: string;
+    lastName: string;
+    email: string;
+}
+
 const Dashboard = () => {
-    const [patient, setPatient] = useState(null); // Changed initial state to null
+    const [patient, setPatient] = useState<Patient | null>(null); // Changed initial state to null
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -35,7 +43,7 @@ const Dashboard = () => {
     const calculateAge = (dob :any) => {
         const birthDate = new Date(dob);
         const currentDate = new Date();
-        const diffMs = currentDate - birthDate;
+        const diffMs = currentDate.getTime() - birthDate.getTime();
         const ageDate = new Date(diffMs);
 
         const years = Math.abs(ageDate.getUTCFullYear() - 1970);

@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,11 +12,27 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 
 import DashboardHeader from "@/components/organisms/DashboardHeader";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const TaskOnboarding = () => {
-  // TODO: Replace with user's name
-  const name = "Leo";
-  const title = `Hello Little ` + name + ` !`;
+  const [name, setName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchName = async () => {
+      try {
+        const storedName = await AsyncStorage.getItem("audi-patient");
+        if (storedName) {
+          setName(JSON.parse(storedName)?.firstName);
+        }
+      } catch (error) {
+        console.error("Error retrieving patient from AsyncStorage:", error);
+      }
+    };
+
+    fetchName();
+  }, []);
+
+  const title = name ? `Hello Little ${name} !` : "Hello!";
 
   return (
     <View className="flex-1 bg-gray-100">
