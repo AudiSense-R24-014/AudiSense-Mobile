@@ -20,7 +20,7 @@ const Index = () => {
     return null;
   }
   return (
-    <Redirect href="/tasks/awareness" />
+    <Redirect href="/onboarding/landing" />
   );
 };
 
