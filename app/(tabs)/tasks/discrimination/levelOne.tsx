@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, Platform, Pressable } from 'react-native';
 import * as Speech from 'expo-speech';
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import QuestionButton from '@/components/molecules/QuestionButton';
 import AnswerButton from '@/components/molecules/AnswerButton';
 import DiscriminationTaskService from '@/services/DiscriminationTask.service';
 
 const DiscriminationLevel1 = () => {
+  const { discActId } = useLocalSearchParams();
   const [firstWord, setFirstWord] = useState("");
   const [secondWord, setSecondWord] = useState("");
   const [selectedAnswer, setSelectedAnswer] = useState("");

@@ -4,14 +4,17 @@ import DiscriminationTaskService from '@/services/DiscriminationTask.service';
 import AnswerButton from '@/components/molecules/AnswerButton';
 import SpeechInput from '@/components/molecules/SpeechInput';
 import { storage, ref, uploadBytes, getDownloadURL } from "@/firebaseConfig";
+import { useLocalSearchParams } from 'expo-router';
 
 const DiscriminationLevel2 = () => {
+    const { discActId } = useLocalSearchParams();
     const [firstWord, setFirstWord] = useState("");
     const [secondWord, setSecondWord] = useState("");
     const [lockedRecordings, setLockedRecordings] = useState<any[]>([]);
     
 
     useEffect(() => {
+        console.log("DiscActId: ", discActId);
         DiscriminationTaskService.getDiscriminationTaskById("66db2163230c2790b39a8df3").then((data) => {
             setFirstWord(data?.word1);
             setSecondWord(data?.word2);
