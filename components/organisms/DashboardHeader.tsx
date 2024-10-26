@@ -10,7 +10,7 @@ type DashboardHeaderProps = {
 const DashboardHeader = ({ title, subtitle }: DashboardHeaderProps) => {
     // TODO: Implement Drawer Navigation
     const handleMenuPress = () => {
-        Alert.alert('TODO ! ', 'Implement Drawer Navigation');
+        // Alert.alert('TODO ! ', 'Implement Drawer Navigation');
     };
 
     return (

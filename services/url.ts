@@ -4,6 +4,7 @@ import * as ENV from '../dotenv.config';
 const BASE_URL = `https://apigateway-pv2f.onrender.com`;
 
 export const PATIENT_LOGIN = `${BASE_URL}/patients/login`;
+export const ORGANIZATION_BY_ID = (id: string) => `${BASE_URL}/organizations/${id}`;
 
 export const GET_AWARENESS_TASKS_BY_PATIENT_ID = (patientID: string) => `${BASE_URL}/awareness-sound/patientID/${patientID}`;
 export const GET_LING6_TASKS_BY_PATIENT_ID = (patientID: string) => `${BASE_URL}/ling6-all/patientID/${patientID}`;
@@ -23,9 +24,9 @@ export const COMPREHENSIVE_ACTIVITY_BY_PATIENT_ID = (id: number) => `${BASE_URL}
 export const COMPREHENSIVE_ASSIGNED_ACTIVITIES_BY_PATIENT_ID = (id: number) => `${BASE_URL}/comprehension-activity/patient/${id}/assigned`;
 
 export const IDENTIFICATION_LEVEL1_TASK_BY_PATIENT_ID = (id: number) => `${BASE_URL}/api/level1/patientID/${id}`;
-export const IDENTIFICATION_LEVEL2_TASK_BY_PATIENT_ID = (id:number) => `${BASE_URL}/identification-level2/patientID/${id}`;
-export const UPDATE_ANSWER_LEVEL1 = (id:string) => `${BASE_URL}/identification-level1/updateLevel1ItemByTaskID/${id}`;
-export const UPDATE_ANSWER_LEVEL2 = (id:string) => `${BASE_URL}/identification-level2/updateLevel2ItemByTaskID/${id}`;
+export const IDENTIFICATION_LEVEL2_TASK_BY_PATIENT_ID = (id: number) => `${BASE_URL}/identification-level2/patientID/${id}`;
+export const UPDATE_ANSWER_LEVEL1 = (id: string) => `${BASE_URL}/identification-level1/updateLevel1ItemByTaskID/${id}`;
+export const UPDATE_ANSWER_LEVEL2 = (id: string) => `${BASE_URL}/identification-level2/updateLevel2ItemByTaskID/${id}`;
 
 export const DISCRIMINATION_TASK_BY_ID = (id: number) => `${BASE_URL}/discriminationQuestion/${id}`;
 export const DISCRIMINATION_ACTIVITY_BY_ID = (id: number) => `${BASE_URL}/activityDiscrimination/${id}`;
