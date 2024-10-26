@@ -43,7 +43,7 @@ const TaskOnboarding = () => {
             Let's Begin Your Hearing Journey Here
           </Text>
 
-          <Pressable onPress={() => router.push("/tasks")} className="mb-1">
+          <Pressable onPress={() => router.push("/tasks/awareness/levels")} className="mb-1">
             <LinearGradient
               colors={["#EC6F9E", "#EC8B6A"]}
               className="rounded-lg p-6 mb-4 h-36 justify-center relative"
@@ -54,13 +54,13 @@ const TaskOnboarding = () => {
               />
               <TouchableOpacity className="absolute top-8 left-8">
                 <Image
-                  source={require("../../../assets/images/restartIcon.png")}
+                  source={require("../../../assets/images/playIcon.png")}
                   className="w-12 h-11 -top-3 -left-4"
                 />
               </TouchableOpacity>
               <View style={{ position: "absolute", bottom: 8, left: 16 }}>
                 <Text className="text-inter-bold text-white mb-4 top-3">
-                  COMPLETED
+                  Level 1
                 </Text>
                 <Text className="text-inter-regular text-white text-xl">
                   Awareness

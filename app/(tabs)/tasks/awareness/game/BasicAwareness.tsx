@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import moment from 'moment';
 import React, { useState, useEffect } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import AwarenessSoundTaskService from '@/services/AwarenessService/AwarenessSoundTask.service';
 
@@ -41,16 +42,36 @@ const images = [
 export default function BasicAwareness() {
     const router = useRouter();
 
-    const patientID = '66dc2b782c63571bf9060f94'
+    const [patientID, setPatientID] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchPatientID = async () => {
+            try {
+                const storedPatientID = await AsyncStorage.getItem("audi-patient");
+                if (storedPatientID) {
+                    setPatientID(JSON.parse(storedPatientID)?._id);
+                }
+            } catch (error) {
+                console.error("Error retrieving patient from AsyncStorage:", error);
+            }
+        };
+
+        fetchPatientID();
+    }, []);
 
     const [data, setData] = useState<DataItem[]>([]);
 
     useEffect(() => {
-        AwarenessSoundTaskService.getAwarenessSoundTasksByPatientId(patientID)
-            .then((response) => {
-                setData(response);
-            });
-    }, []);
+        if (patientID) {
+            AwarenessSoundTaskService.getAwarenessSoundTasksByPatientId(patientID)
+                .then((response) => {
+                    setData(response);
+                })
+                .catch((error) => {
+                    console.error("Error fetching awareness sound tasks:", error);
+                });
+        }
+    }, [patientID]);
 
     const getUniqueRandomGradient = (previousGradient: GradientColors | null): GradientColors => {
         const availableGradients = gradientColors.filter(gradient => gradient !== previousGradient);
