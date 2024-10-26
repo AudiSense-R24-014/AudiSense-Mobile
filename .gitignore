@@ -19,3 +19,4 @@ dotenv.config.ts
 
 expo-env.d.ts
 # @end expo-cli
+.vscode
