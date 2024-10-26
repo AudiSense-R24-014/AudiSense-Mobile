@@ -27,7 +27,7 @@ const TaskOnboarding = () => {
             Let's Begin Your Hearing Journey Here
           </Text>
 
-          <Pressable onPress={() => router.push("/tasks")} className="mb-1">
+          <Pressable onPress={() => router.push("/tasks/awareness/levels")} className="mb-1">
             <LinearGradient
               colors={["#EC6F9E", "#EC8B6A"]}
               className="rounded-lg p-6 mb-4 h-36 justify-center relative"
