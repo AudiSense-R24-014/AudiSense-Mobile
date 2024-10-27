@@ -14,8 +14,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Modal from "react-native-modal";
 import taskService from "@/services/IdentificationTask.service";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Define gradients for the card backgrounds
 const gradients: string[][] = [
   ["#F7C0E9", "#a6c1ee"],
   ["#F7C0E9", "#a6c1ee"],
@@ -34,22 +34,40 @@ const LevelTwo = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
-
-  const patientID = "66de59882283afc1239ac123";
+  const [patientID, setPatientID] = useState<string | null>(null);
 
   // Fetch tasks on component mount
   useEffect(() => {
-    fetchTaskData();
+    loadPatientID();
 
     return () => {
       sound?.unloadAsync();
     };
   }, []);
 
-  // Fetch task data from the server
-  const fetchTaskData = async () => {
+  // Load patient ID from AsyncStorage
+  const loadPatientID = async () => {
     try {
-      const taskData = await taskService.getIdentificationLevelTwoTaskByPatientId(patientID);
+      const storedPatientData = await AsyncStorage.getItem("audi-patient");
+      const parsedPatientData = storedPatientData ? JSON.parse(storedPatientData) : null;
+      if (parsedPatientData && parsedPatientData._id) {
+        setPatientID(parsedPatientData._id);
+        fetchTaskData(parsedPatientData._id);
+      } else {
+        setModalMessage("Patient ID not found. Please log in again.");
+        setModalVisible(true);
+      }
+    } catch (error) {
+      console.error("Error retrieving patient ID:", error);
+      setModalMessage("Error loading patient data. Please try again.");
+      setModalVisible(true);
+    }
+  };
+
+  // Fetch task data from the server
+  const fetchTaskData = async (id: string) => {
+    try {
+      const taskData = await taskService.getIdentificationLevelTwoTaskByPatientId(id);
       setTasks(taskData);
     } catch (error) {
       setModalMessage("Failed to load tasks. Please try again.");
