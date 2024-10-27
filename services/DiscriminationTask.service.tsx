@@ -23,6 +23,18 @@ const saveDiscrimantionTaskResponse = async (id : any, body : any) => {
   return data;
 }
 
+
+const getActivityById = async (id : any) => {
+  const response = await fetch(URL.DISCRIMINATION_ACTIVITY_BY_ID(id), {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const data = await response.json();
+  return data;
+}
+
 const saveDiscriminationActvityResponse = async (req : any) => {
   
   const response = await fetch(URL.DISCRIMINATION_ACTIVITY, {
@@ -47,8 +59,22 @@ const getDiscriminationActivityByPatientId = async (id : any) => {
   return data;
 }
 
+const updateDiscriminationActivity = async (id : any, body : any) => {
+  const response = await fetch(URL.DISCRIMINATION_ACTIVITY_BY_ID(id), {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await response.json();
+  return data;
+}
+
 export default{
     getDiscriminationTaskById,
     saveDiscriminationActvityResponse,
     getDiscriminationActivityByPatientId,
+    getActivityById,
+    updateDiscriminationActivity
 }

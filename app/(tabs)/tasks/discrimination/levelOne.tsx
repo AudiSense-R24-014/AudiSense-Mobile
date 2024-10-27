@@ -15,9 +15,9 @@ const DiscriminationLevel1 = () => {
 
 
   useEffect(() => {
-    DiscriminationTaskService.getDiscriminationTaskById("66db2163230c2790b39a8df3").then((data) => {
-      setFirstWord(data?.word1);
-      setSecondWord(data?.word2);
+    DiscriminationTaskService.getActivityById(discActId).then((data) => {
+      setFirstWord(data?.discriminationTask.word1);
+      setSecondWord(data?.discriminationTask.word2);
     });
   }, []);
 
@@ -36,13 +36,10 @@ const DiscriminationLevel1 = () => {
   }
   
 
-  const saveProgress = async (status:string) => {
+  const saveProgress = async (score:number) => {
     const feedback = {
-      word1: firstWord,
-      word2: secondWord,
-      status: status,
-      level: "1",
-      patient: "Leo",
+      status: "Completed",
+      score: score,
     };
     DiscriminationTaskService.saveDiscriminationActvityResponse(feedback)
       .then((data) => {
@@ -53,18 +50,31 @@ const DiscriminationLevel1 = () => {
       });
   };
 
+  const updateDiscriminationActivity = async (id: any, score: number) => {
+    const feedback = {
+      status: "Completed",
+      score: score,
+    };
+    DiscriminationTaskService.updateDiscriminationActivity(id, feedback)
+      .then((data) => {
+        console.log("Updated Discrimination Activity: ", data);
+      })
+      .catch((err) => {
+        console.error("Error updating Discrimination Activity: ", err);
+      });
+  };
+
   
   const [tts, setTts] = useState("");
   const checkAnswer = async () => {
     if (selectedAnswer == firstWord) {
-      saveProgress("completed");
-      setStatus("completed");
+      updateDiscriminationActivity(discActId,2);
       console.log("Correct Answer");
     } else {
-      saveProgress("failed");
-      setStatus("failed");
+      updateDiscriminationActivity(discActId,0);
       console.log("Incorrect Answer");
     }
+    
   }
   useEffect(() => {
     if (Platform.OS == "ios") {
@@ -80,15 +90,15 @@ const DiscriminationLevel1 = () => {
       <Text className="text-2xl font-bold mb-2 text-violet-800">Discrimination - Level 1</Text>
       <Text className="text-base mb-5">Hear, and Select the Correct Rhyming Words</Text>
       <View>
-        <QuestionButton text={"bunny"} />
+        <QuestionButton text={firstWord} />
       </View>
 
-      <Text className="text-xl font-bold mb-5 text-center self-center">{"Bunny"}</Text>
-      {handleRhymes("honey", "bunny")}
+      <Text className="text-xl font-bold mb-5 text-center self-center">{firstWord.toUpperCase()}</Text>
+      {handleRhymes(firstWord, secondWord)}
       <View className="mt-20">
       </View>
       <TouchableOpacity
-        className={`bg-purple-800 p-2 rounded-lg w-3/4 mx-auto border ${status === "completed"
+        className={`bg-purple-800 p-2 rounded-lg w-3/4 mx-auto border ${status === "Completed"
           ? "border-lime-500"
           : status === "failed"
             ? "border-red-400"

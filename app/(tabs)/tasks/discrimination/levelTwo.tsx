@@ -11,31 +11,31 @@ const DiscriminationLevel2 = () => {
     const [firstWord, setFirstWord] = useState("");
     const [secondWord, setSecondWord] = useState("");
     const [lockedRecordings, setLockedRecordings] = useState<any[]>([]);
-    
+
 
     useEffect(() => {
         console.log("DiscActId: ", discActId);
-        DiscriminationTaskService.getDiscriminationTaskById("66db2163230c2790b39a8df3").then((data) => {
-            setFirstWord(data?.word1);
-            setSecondWord(data?.word2);
+        DiscriminationTaskService.getActivityById(discActId).then((data) => {
+            setFirstWord(data?.discriminationTask.word1);
+            setSecondWord(data?.discriminationTask.word2);
         });
     }, []);
 
 
     const updateLockedRecording = (index: number, newValue: any) => {
         setLockedRecordings((prevLockedRecordings) => {
-          const updatedRecordings = [...prevLockedRecordings];
-          updatedRecordings[index] = newValue;
-          return updatedRecordings;
+            const updatedRecordings = [...prevLockedRecordings];
+            updatedRecordings[index] = newValue;
+            return updatedRecordings;
         });
-      };
-      
+    };
+
 
     const capitalizeFirstLetter = (word: string) => {
         return word.charAt(0).toUpperCase() + word.slice(1);
     };
 
-    
+
 
     const submit = async () => {
         try {
@@ -55,30 +55,42 @@ const DiscriminationLevel2 = () => {
                     urls[i] = downloadURL;
                 }
             }
-            saveProgress(urls);
+            // saveProgress(urls);
+            updateDiscriminationActivity(discActId, urls);
             console.log("Uploaded recording URLs:", urls);
         } catch (error) {
             console.error("Error uploading recordings:", error);
         }
     };
 
-    const saveProgress = async (urls:any[]) => {
+    // const saveProgress = async (urls: any[]) => {
+    //     const feedback = {
+    //         status: "Completed",
+    //         providedAnswers: urls,
+    //     };
+    //     DiscriminationTaskService.saveDiscriminationActvityResponse(feedback)
+    //         .then((data) => {
+    //             console.log("Rhyming Words saved Successfully: ", data);
+    //         })
+    //         .catch((err) => {
+    //             console.error("Error saving: ", err);
+    //         });
+    // };
+    const updateDiscriminationActivity = async (id: any, urls: any[]) => {
         const feedback = {
-            word1: firstWord,
-            word2: secondWord,
-            status: "completed",
-            level: "2",
+            status: "Completed",
             providedAnswers: urls,
-            patient: "Leo",
+
         };
-        DiscriminationTaskService.saveDiscriminationActvityResponse(feedback)
+        DiscriminationTaskService.updateDiscriminationActivity(discActId, feedback)
             .then((data) => {
-                console.log("Rhyming Words saved Successfully: ", data);
+                console.log("Updated Discrimination Activity: ", data);
             })
             .catch((err) => {
-                console.error("Error saving: ", err);
+                console.error("Error updating Discrimination Activity: ", err);
             });
     };
+
 
     return (
         <View className="flex-1 bg-white items-center">
@@ -90,15 +102,15 @@ const DiscriminationLevel2 = () => {
             <View className="flex-row justify-around w-full mb-20">
                 <View className="items-center w-2/5">
                     <View>
-                        <AnswerButton text={"Hello"} character={''} />
+                        <AnswerButton text={firstWord} character={''} />
                     </View>
-                    <Text className="text-lg font-bold text-purple-700 mt-2">{capitalizeFirstLetter("Hello")}</Text>
+                    <Text className="text-lg font-bold text-purple-700 mt-2">{capitalizeFirstLetter(firstWord)}</Text>
                 </View>
                 <View className="items-center w-2/5">
                     <View>
-                        <AnswerButton text={"Mellow"} character={''} />
+                        <AnswerButton text={secondWord} character={''} />
                     </View>
-                    <Text className="text-lg font-bold text-purple-700 mt-2">{capitalizeFirstLetter("Mellow")}</Text>
+                    <Text className="text-lg font-bold text-purple-700 mt-2">{capitalizeFirstLetter(secondWord)}</Text>
                 </View>
             </View>
             <View className="flex-row justify-between">
@@ -107,7 +119,7 @@ const DiscriminationLevel2 = () => {
                         lockRecording={function (recording: any): void {
                             updateLockedRecording(0, recording);
                         }}
-                        recordedAudio={lockedRecordings[0]?lockedRecordings[0]:undefined} 
+                        recordedAudio={lockedRecordings[0] ? lockedRecordings[0] : undefined}
                     />
                 </View>
                 <View className="flex-1">
@@ -115,7 +127,7 @@ const DiscriminationLevel2 = () => {
                         lockRecording={function (recording: any): void {
                             updateLockedRecording(1, recording);
                         }}
-                        recordedAudio={lockedRecordings[1]?lockedRecordings[1]:undefined}
+                        recordedAudio={lockedRecordings[1] ? lockedRecordings[1] : undefined}
                     />
                 </View>
             </View>

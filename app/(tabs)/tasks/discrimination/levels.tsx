@@ -24,6 +24,7 @@ interface Activity {
     updatedOn: string;
     __v: number;
     level: string;
+    score:Number;
 }
 
 const Levels: React.FC = () => {
@@ -176,7 +177,7 @@ const Levels: React.FC = () => {
                                         activity.level,
                                         "Completed",
                                         activity._id,
-                                        `${activity.providedAnswers.length} / TotalCount`, // Adjust based on data
+                                        `${activity.score} / 2`, // Adjust based on data
                                         false
                                     )
                                 )}
