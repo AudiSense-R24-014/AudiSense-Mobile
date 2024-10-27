@@ -165,7 +165,7 @@ const LevelTwo = () => {
           </TouchableOpacity>
         </IdentificationHeader>
 
-        <PlaybackBar onPlay={handlePlayButtonClick} />
+        <PlaybackBar onPlay={handlePlayButtonClick} onEnd={goToNextTask} />
 
         <View className="flex-6 justify-center items-center relative mt-8">
           {currentTaskIndex > 0 && (

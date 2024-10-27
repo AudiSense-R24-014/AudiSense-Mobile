@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Animated } from 'react-native';
+import { View, TouchableOpacity, Animated } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const useSoundPlayback = (onPlay: () => void) => {
+const useSoundPlayback = (onPlay: () => void, onEnd: () => void) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasEnded, setHasEnded] = useState(false);
 
@@ -13,19 +13,23 @@ const useSoundPlayback = (onPlay: () => void) => {
       timer = setTimeout(() => {
         setIsPlaying(false);
         setHasEnded(true);
-      }, 5000); 
-      onPlay(); 
+        onEnd();
+      }, 10000);
+      onPlay();
     } else {
       setHasEnded(false);
     }
 
-    return () => clearTimeout(timer); 
-  }, [isPlaying, onPlay]);
+    return () => clearTimeout(timer);
+  }, [isPlaying, onPlay, onEnd]);
 
   return {
     isPlaying,
     hasEnded,
-    play: () => setIsPlaying(true),
+    play: () => {
+      setIsPlaying(true);
+      setHasEnded(false);
+    },
     pause: () => setIsPlaying(false),
     replay: () => {
       setIsPlaying(true);
@@ -34,8 +38,8 @@ const useSoundPlayback = (onPlay: () => void) => {
   };
 };
 
-const PlaybackBar = ({ onPlay }: { onPlay: () => void }) => {
-  const { isPlaying, hasEnded, play, pause, replay } = useSoundPlayback(onPlay);
+const PlaybackBar = ({ onPlay, onEnd }: { onPlay: () => void; onEnd: () => void }) => {
+  const { isPlaying, hasEnded, play, pause, replay } = useSoundPlayback(onPlay, onEnd);
   const waveHeight = new Animated.Value(1);
 
   useEffect(() => {
@@ -45,13 +49,13 @@ const PlaybackBar = ({ onPlay }: { onPlay: () => void }) => {
           Animated.timing(waveHeight, {
             toValue: 5,
             duration: 400,
-            useNativeDriver: false
+            useNativeDriver: false,
           }),
           Animated.timing(waveHeight, {
             toValue: 1,
             duration: 400,
-            useNativeDriver: false
-          })
+            useNativeDriver: false,
+          }),
         ])
       ).start();
     } else {
@@ -65,11 +69,11 @@ const PlaybackBar = ({ onPlay }: { onPlay: () => void }) => {
         {/* Play/Pause Button */}
         <TouchableOpacity 
           onPress={isPlaying ? pause : play} 
-          className="flex items-center justify-center w-10 h-10 bg-purple-100 rounded-full"
+          className="flex items-center justify-center w-12 h-12 bg-purple-200 rounded-full transition duration-200 ease-in-out hover:bg-purple-300"
         >
           <FontAwesome 
             name={isPlaying ? "pause" : "play"} 
-            size={16} 
+            size={20} 
             color="#7D4AEA" 
           />
         </TouchableOpacity>
@@ -100,11 +104,11 @@ const PlaybackBar = ({ onPlay }: { onPlay: () => void }) => {
         {hasEnded && (
           <TouchableOpacity 
             onPress={replay} 
-            className="flex items-center justify-center w-10 h-10 bg-purple-100 rounded-full"
+            className="flex items-center justify-center w-12 h-12 bg-purple-200 rounded-full transition duration-200 ease-in-out hover:bg-purple-300"
           >
             <FontAwesome 
               name="repeat" 
-              size={16} 
+              size={20} 
               color="#7D4AEA" 
             />
           </TouchableOpacity>
