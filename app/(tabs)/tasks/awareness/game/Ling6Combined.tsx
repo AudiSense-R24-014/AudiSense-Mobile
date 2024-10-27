@@ -4,6 +4,8 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import moment from 'moment';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 import Ling6AllTaskService from '@/services/AwarenessService/Ling6AllTask.service';
 
@@ -36,17 +38,32 @@ const images = [
 
 const Ling6Combined: React.FC = () => {
     const router = useRouter();
+    const [patientID, setPatientID] = useState<string | null>(null);
+    useEffect(() => {
+        const fetchPatientID = async () => {
+            try {
+                const storedPatientID = await AsyncStorage.getItem("audi-patient");
+                if (storedPatientID) {
+                    setPatientID(JSON.parse(storedPatientID)?._id);
+                }
+            } catch (error) {
+                console.error("Error retrieving patient from AsyncStorage:", error);
+            }
+        };
 
-    const patientID = '66dc2b782c63571bf9060f94'
+        fetchPatientID();
+    }, []);
 
     const [data, setData] = useState<TaskData[]>([]);
 
     useEffect(() => {
-        Ling6AllTaskService.getLing6AllTasksByPatientId(patientID)
-            .then((response) => {
-                setData(response);
-            });
-    }, []);
+        if (patientID) {
+            Ling6AllTaskService.getLing6AllTasksByPatientId(patientID)
+                .then((response) => {
+                    setData(response);
+                });
+        }
+    }, [patientID]);
 
     const getUniqueRandomGradient = (previousGradient: string[]): string[] => {
         const availableGradients = gradientColors.filter(gradient => gradient !== previousGradient);

@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons'; // Importing icon library
 import { LinearGradient } from 'expo-linear-gradient'; // Importing LinearGradient
 import moment from 'moment';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Ling6SeparateService from '@/services/AwarenessService/Ling6Separate.service';
 
@@ -27,7 +28,22 @@ type TaskSet = {
 export default function Ling6Separated() {
     const router = useRouter();
 
-    const patientID = '66dc2b782c63571bf9060f94'
+    const [patientID, setPatientID] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchPatientID = async () => {
+            try {
+                const storedPatientID = await AsyncStorage.getItem("audi-patient");
+                if (storedPatientID) {
+                    setPatientID(JSON.parse(storedPatientID)?._id);
+                }
+            } catch (error) {
+                console.error("Error retrieving patient from AsyncStorage:", error);
+            }
+        };
+
+        fetchPatientID();
+    }, []);
 
     const [data, setData] = useState<TaskSet[]>([]);
 

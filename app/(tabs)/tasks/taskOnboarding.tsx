@@ -54,13 +54,13 @@ const TaskOnboarding = () => {
               />
               <TouchableOpacity className="absolute top-8 left-8">
                 <Image
-                  source={require("../../../assets/images/restartIcon.png")}
+                  source={require("../../../assets/images/playIcon.png")}
                   className="w-12 h-11 -top-3 -left-4"
                 />
               </TouchableOpacity>
               <View style={{ position: "absolute", bottom: 8, left: 16 }}>
                 <Text className="text-inter-bold text-white mb-4 top-3">
-                  COMPLETED
+                  Level 1
                 </Text>
                 <Text className="text-inter-regular text-white text-xl">
                   Awareness

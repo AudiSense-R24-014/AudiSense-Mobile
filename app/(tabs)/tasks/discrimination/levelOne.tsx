@@ -5,20 +5,39 @@ import { router } from "expo-router";
 import QuestionButton from '@/components/molecules/QuestionButton';
 import AnswerButton from '@/components/molecules/AnswerButton';
 import DiscriminationTaskService from '@/services/DiscriminationTask.service';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const DiscriminationLevel1 = () => {
   const [firstWord, setFirstWord] = useState("");
   const [secondWord, setSecondWord] = useState("");
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [status, setStatus] = useState("");
-
+  const [patientID, setPatientID] = useState<string | null>(null);
 
   useEffect(() => {
-    DiscriminationTaskService.getDiscriminationTaskById("66db2163230c2790b39a8df3").then((data) => {
-      setFirstWord(data?.word1);
-      setSecondWord(data?.word2);
-    });
+    const fetchPatientID = async () => {
+      try {
+        const storedPatientID = await AsyncStorage.getItem("audi-patient");
+        if (storedPatientID) {
+          setPatientID(JSON.parse(storedPatientID)?._id);
+        }
+      } catch (error) {
+        console.error("Error retrieving patient from AsyncStorage:", error);
+      }
+    };
+
+    fetchPatientID();
   }, []);
+
+  useEffect(() => {
+    if (patientID) {
+      DiscriminationTaskService.getDiscriminationTaskById(patientID)
+        .then((data) => {
+          setFirstWord(data?.word1);
+          setSecondWord(data?.word2);
+        });
+    }
+  }, [patientID]);
 
   const handleRhymes = (firstWord: string, secondWord: string) => {
     let randomNumber = Math.floor(Math.random() * 2);
@@ -27,15 +46,15 @@ const DiscriminationLevel1 = () => {
       <View className="flex-col space-y-5 mb-5">
         {words.map((word, index) => (
           <Pressable className="mb-3 mt-2">
-            <AnswerButton character={index.toString()} text={word} storeAnswer={()=>setSelectedAnswer(word)}/>
+            <AnswerButton character={index.toString()} text={word} storeAnswer={() => setSelectedAnswer(word)} />
           </Pressable>
         ))}
       </View>
     )
   }
-  
 
-  const saveProgress = async (status:string) => {
+
+  const saveProgress = async (status: string) => {
     const feedback = {
       word1: firstWord,
       word2: secondWord,
@@ -52,7 +71,7 @@ const DiscriminationLevel1 = () => {
       });
   };
 
-  
+
   const [tts, setTts] = useState("");
   const checkAnswer = async () => {
     if (selectedAnswer == firstWord) {

@@ -4,6 +4,7 @@ import * as ENV from '../dotenv.config';
 const BASE_URL = `https://apigateway-pv2f.onrender.com`;
 
 export const PATIENT_LOGIN = `${BASE_URL}/patients/login`;
+export const ORGANIZATION_BY_ID = (id: string) => `${BASE_URL}/organizations/${id}`;
 
 export const GET_AWARENESS_TASKS_BY_PATIENT_ID = (patientID: string) => `${BASE_URL}/awareness-sound/patientID/${patientID}`;
 export const GET_LING6_TASKS_BY_PATIENT_ID = (patientID: string) => `${BASE_URL}/ling6-all/patientID/${patientID}`;

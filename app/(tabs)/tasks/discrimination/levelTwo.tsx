@@ -4,35 +4,54 @@ import DiscriminationTaskService from '@/services/DiscriminationTask.service';
 import AnswerButton from '@/components/molecules/AnswerButton';
 import SpeechInput from '@/components/molecules/SpeechInput';
 import { storage, ref, uploadBytes, getDownloadURL } from "@/firebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const DiscriminationLevel2 = () => {
     const [firstWord, setFirstWord] = useState("");
     const [secondWord, setSecondWord] = useState("");
     const [lockedRecordings, setLockedRecordings] = useState<any[]>([]);
-    
+    const [patientID, setPatientID] = useState<string | null>(null);
 
     useEffect(() => {
-        DiscriminationTaskService.getDiscriminationTaskById("66db2163230c2790b39a8df3").then((data) => {
-            setFirstWord(data?.word1);
-            setSecondWord(data?.word2);
-        });
+        const fetchPatientID = async () => {
+            try {
+                const storedPatientID = await AsyncStorage.getItem("audi-patient");
+                if (storedPatientID) {
+                    setPatientID(JSON.parse(storedPatientID)?._id);
+                }
+            } catch (error) {
+                console.error("Error retrieving patient from AsyncStorage:", error);
+            }
+        };
+
+        fetchPatientID();
     }, []);
+
+    useEffect(() => {
+        if (patientID) {
+            DiscriminationTaskService.getDiscriminationTaskById(patientID)
+                .then((data) => {
+                    setFirstWord(data?.word1);
+                    setSecondWord(data?.word2);
+                });
+        }
+    }, [patientID]);
 
 
     const updateLockedRecording = (index: number, newValue: any) => {
         setLockedRecordings((prevLockedRecordings) => {
-          const updatedRecordings = [...prevLockedRecordings];
-          updatedRecordings[index] = newValue;
-          return updatedRecordings;
+            const updatedRecordings = [...prevLockedRecordings];
+            updatedRecordings[index] = newValue;
+            return updatedRecordings;
         });
-      };
-      
+    };
+
 
     const capitalizeFirstLetter = (word: string) => {
         return word.charAt(0).toUpperCase() + word.slice(1);
     };
 
-    
+
 
     const submit = async () => {
         try {
@@ -59,7 +78,7 @@ const DiscriminationLevel2 = () => {
         }
     };
 
-    const saveProgress = async (urls:any[]) => {
+    const saveProgress = async (urls: any[]) => {
         const feedback = {
             word1: firstWord,
             word2: secondWord,
@@ -104,7 +123,7 @@ const DiscriminationLevel2 = () => {
                         lockRecording={function (recording: any): void {
                             updateLockedRecording(0, recording);
                         }}
-                        recordedAudio={lockedRecordings[0]?lockedRecordings[0]:undefined} 
+                        recordedAudio={lockedRecordings[0] ? lockedRecordings[0] : undefined}
                     />
                 </View>
                 <View className="flex-1">
@@ -112,7 +131,7 @@ const DiscriminationLevel2 = () => {
                         lockRecording={function (recording: any): void {
                             updateLockedRecording(1, recording);
                         }}
-                        recordedAudio={lockedRecordings[1]?lockedRecordings[1]:undefined}
+                        recordedAudio={lockedRecordings[1] ? lockedRecordings[1] : undefined}
                     />
                 </View>
             </View>
