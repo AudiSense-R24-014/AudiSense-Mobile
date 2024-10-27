@@ -23,7 +23,7 @@ export const COMPREHENSIVE_ACTIVITY_BY_ID = (id: number) => `${BASE_URL}/compreh
 export const COMPREHENSIVE_ACTIVITY_BY_PATIENT_ID = (id: number) => `${BASE_URL}/comprehension-activity/patient/${id}`;
 export const COMPREHENSIVE_ASSIGNED_ACTIVITIES_BY_PATIENT_ID = (id: number) => `${BASE_URL}/comprehension-activity/patient/${id}/assigned`;
 
-export const IDENTIFICATION_LEVEL1_TASK_BY_PATIENT_ID = (id: number) => `${BASE_URL}/api/identification-level1/patientID/${id}`;
+export const IDENTIFICATION_LEVEL1_TASK_BY_PATIENT_ID = (id: number) => `${BASE_URL}/identification-level1/patientID/${id}`;
 export const IDENTIFICATION_LEVEL2_TASK_BY_PATIENT_ID = (id:number) => `${BASE_URL}/identification-level2/patientID/${id}`;
 export const UPDATE_ANSWER_LEVEL1 = (id:string) => `${BASE_URL}/identification-level1/updateLevel1ItemByTaskID/${id}`;
 export const UPDATE_ANSWER_LEVEL2 = (id:string) => `${BASE_URL}/identification-level2/updateLevel2ItemByTaskID/${id}`;

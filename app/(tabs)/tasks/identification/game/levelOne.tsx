@@ -14,6 +14,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import Modal from "react-native-modal";
 import taskService from "@/services/IdentificationTask.service";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
 const gradients: string[][] = [
@@ -35,19 +36,36 @@ const LevelOne = () => {
   const [modalMessage, setModalMessage] = useState("");
   const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
   const [isAllTasksCompleted, setIsAllTasksCompleted] = useState(false);
-
-  const patientID = "66de59882283afc1239ac123";
+  const [patientID, setPatientID] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchTaskData();
+    loadPatientID();
     return () => {
       sound?.unloadAsync();
     };
   }, []);
 
-  const fetchTaskData = async () => {
+  const loadPatientID = async () => {
     try {
-      const taskData = await taskService.getIdentificationLevelOneTaskByPatientId(patientID);
+      const storedPatientData = await AsyncStorage.getItem("audi-patient");
+      const parsedPatientData = storedPatientData ? JSON.parse(storedPatientData) : null;
+      if (parsedPatientData && parsedPatientData._id) {
+        setPatientID(parsedPatientData._id);
+        fetchTaskData(parsedPatientData._id);
+      } else {
+        setModalMessage("Patient ID not found. Please log in again.");
+        setModalVisible(true);
+      }
+    } catch (error) {
+      console.error("Error retrieving patient ID:", error);
+      setModalMessage("Error loading patient data. Please try again.");
+      setModalVisible(true);
+    }
+  };
+
+  const fetchTaskData = async (id: string) => {
+    try {
+      const taskData = await taskService.getIdentificationLevelOneTaskByPatientId(id);
       setTasks(taskData);
 
       const allTasksCompleted = taskData.every((task: any) => task.response === true);
@@ -98,13 +116,10 @@ const LevelOne = () => {
     setModalVisible(true);
 
     if (isCorrect) {
-      const data = {
-        response: true,
-      };
+      const data = { response: true };
       try {
         await taskService.updateAnswerLevel1(tasks[currentTaskIndex]._id, data);
 
-        // Update the task response in local state
         const updatedTasks = tasks.map((task, index) =>
           index === currentTaskIndex ? { ...task, response: true } : task
         );
@@ -112,9 +127,6 @@ const LevelOne = () => {
 
         const allCompleted = updatedTasks.every((task) => task.response === true);
         setIsAllTasksCompleted(allCompleted);
-
-        console.log("Updated Tasks:", updatedTasks);
-        console.log("All Tasks Completed After Update:", allCompleted);
       } catch (error) {
         console.error("Error updating answer:", error);
         setModalMessage("Failed to record your answer. Please try again.");
@@ -171,9 +183,7 @@ const LevelOne = () => {
   };
 
   const handleContinueButtonPress = () => {
-    // Ensure the user can only move to the next level if all tasks are correctly answered
     const allTasksCompleted = tasks.every((task) => task.response === true);
-    
     if (allTasksCompleted) {
       setIsAllTasksCompleted(true);
       router.push("/tasks/identification/game/levelTwo");
@@ -199,7 +209,7 @@ const LevelOne = () => {
           </TouchableOpacity>
         </IdentificationHeader>
 
-        <PlaybackBar onPlay={handlePlayButtonClick} />
+        <PlaybackBar onPlay={handlePlayButtonClick} onEnd={goToNextTask} />
 
         <View className="flex-7 justify-center items-center relative mt-12">
           {currentTaskIndex > 0 && (
