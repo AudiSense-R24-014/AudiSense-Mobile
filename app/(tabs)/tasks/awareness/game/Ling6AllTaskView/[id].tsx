@@ -32,7 +32,7 @@ export default function Ling6AllTaskView() {
     const [soundResponse, setSoundResponse] = useState<string | null>(null);
     const [showSubmitButton, setShowSubmitButton] = useState(false);
     const [data, setData] = useState<Data | null>(null);
-    const [isLoading, setIsLoading] = useState(true); // Loading state for sound
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         Ling6AllTaskService.getLing6AllTaskByID(id)
@@ -44,10 +44,11 @@ export default function Ling6AllTaskView() {
     useEffect(() => {
         if (data?.soundUrl) {
             const loadSound = async () => {
-                setIsLoading(true); // Set loading state to true
+                setIsLoading(true);
                 const { sound } = await Audio.Sound.createAsync({ uri: data.soundUrl });
+                setIsLoading(false);
                 setSound(sound);
-                await sound.setVolumeAsync(1.0); // 1.0 is max volume
+                await sound.setVolumeAsync(1.0);
 
                 sound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
                     if (status.isLoaded) {
@@ -57,8 +58,7 @@ export default function Ling6AllTaskView() {
                         if (status.didJustFinish) {
                             setResponseShown(true);
                             setActiveSound(data.soundUrl);
-                            setShowSubmitButton(true); // Show submit button after sound finishes
-                            setIsLoading(false); // Set loading state to false after sound finishes
+                            setShowSubmitButton(true);
                         }
                     }
                 });
@@ -85,31 +85,21 @@ export default function Ling6AllTaskView() {
         }
     };
 
-    const handleAmplificationResponse = (response: boolean) => {
-        setAmplificationResponse(response);
-    };
-
-    const handleSoundResponse = (response: string) => {
-        setSoundResponse(response);
-        setShowSubmitButton(true); // Show submit button when sound response is given
-    };
-
     const handleSubmit = () => {
         const collectedResponses = {
-            response: soundResponse === 'Yes' ? true : false,
             isImplantOn: amplificationResponse,
         };
 
         Ling6AllTaskService.collectResponse(id, collectedResponses)
-            .then(() => {
-                Alert.alert("Responses submitted successfully!");
-                router.push(`/tasks/awareness/levels`);
-            })
-            .catch((error) => {
-                Alert.alert("Failed to submit responses. Please try again later.");
-                console.error("Failed to submit responses", error);
-            });
-    };
+        .then(() => {
+            Alert.alert("Responses submitted successfully!");
+            router.push(`/tasks/awareness/levels`);
+        })
+        .catch((error) => {
+            Alert.alert("Failed to submit responses. Please try again later.");
+        });
+    }
+    
 
     return (
         <SafeAreaView style={styles.container}>
@@ -129,68 +119,68 @@ export default function Ling6AllTaskView() {
                     end={{ x: 1, y: 1 }}
                     style={styles.questionContainer}
                 >
-                    <View style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                        <Text style={styles.questionText}>
-                            Does your child wear the amplification device during his/her waking hours?
-                        </Text>
+                    <Text style={styles.questionText}>
+                        Does your child wear the amplification device during his/her waking hours?
+                    </Text>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            onPress={() => setAmplificationResponse(true)}
+                            style={[
+                                styles.responseButton,
+                                amplificationResponse === true ? styles.selectedYesButton : styles.defaultButton
+                            ]}
+                        >
+                            <Text style={styles.responseButtonText}>Yes</Text>
+                        </TouchableOpacity>
 
-                        <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            onPress={() => setAmplificationResponse(false)}
+                            style={[
+                                styles.responseButton,
+                                amplificationResponse === false ? styles.selectedNoButton : styles.defaultButton
+                            ]}
+                        >
+                            <Text style={styles.responseButtonText}>No</Text>
+                        </TouchableOpacity>
+                    </View>
+                </LinearGradient>
+
+                {isLoading ? (
+                    <ActivityIndicator size="large" color="#6C26A6" style={{ marginTop: 20 }} />
+                ) : (
+                    <View style={styles.playbackControls}>
+                        <TouchableOpacity onPress={handlePlayPauseSound} style={styles.playPauseButton}>
+                            <Text style={styles.responseButtonText}>{isPlaying ? 'Pause' : 'Play'}</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+                
+                {responseShown && (
+                    <View style={styles.responsePromptContainer}>
+                        <Text style={styles.responsePromptText}>
+                            Did the child respond to the sound?
+                        </Text>
+                        <View style={styles.responseButtonContainer}>
                             <TouchableOpacity
-                                onPress={() => handleAmplificationResponse(true)}
+                                onPress={() => handleSoundResponse('Yes')}
                                 style={[
                                     styles.responseButton,
-                                    amplificationResponse === true ? styles.selectedYesButton : styles.defaultButton
+                                    soundResponse === 'Yes' ? styles.selectedYesButton : styles.defaultButton
                                 ]}
                             >
                                 <Text style={styles.responseButtonText}>Yes</Text>
                             </TouchableOpacity>
-
                             <TouchableOpacity
-                                onPress={() => handleAmplificationResponse(false)}
+                                onPress={() => handleSoundResponse('No')}
                                 style={[
                                     styles.responseButton,
-                                    amplificationResponse === false ? styles.selectedNoButton : styles.defaultButton
+                                    soundResponse === 'No' ? styles.selectedNoButton : styles.defaultButton
                                 ]}
                             >
                                 <Text style={styles.responseButtonText}>No</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
-                </LinearGradient>
-
-
-
-                {isLoading ? ( // Show loading indicator if loading
-                    <ActivityIndicator size="large" color="#6C26A6" style={{ marginTop: 20 }} />
-                ) : (
-                    responseShown && activeSound && (
-                        <View style={styles.responsePromptContainer}>
-                            <Text style={styles.responsePromptText}>
-                                Did the child respond to the sound?
-                            </Text>
-                            <View style={styles.responseButtonContainer}>
-                                <TouchableOpacity
-                                    onPress={() => handleSoundResponse('Yes')}
-                                    style={[
-                                        styles.responseButton,
-                                        soundResponse === 'Yes' ? styles.selectedYesButton : styles.defaultButton
-                                    ]}
-                                >
-                                    <Text style={styles.responseButtonText}>Yes</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    onPress={() => handleSoundResponse('No')}
-                                    style={[
-                                        styles.responseButton,
-                                        soundResponse === 'No' ? styles.selectedNoButton : styles.defaultButton
-                                    ]}
-                                >
-                                    <Text style={styles.responseButtonText}>No</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    )
                 )}
 
                 {showSubmitButton && (
